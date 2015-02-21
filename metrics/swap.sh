@@ -1,2 +1,5 @@
 #!/bin/sh
-echo $(free | awk '/Swap/{print $3/$2 * 100.0;}')
+
+collect () {
+  echo $(free | awk '/Swap/{print $3/$2 * 100.0;}')
+}
