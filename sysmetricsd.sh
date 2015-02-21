@@ -5,7 +5,7 @@ INTERVAL=2
 REPORTER=stdout
 
 # init
-source utils.sh
+source ./lib/utils.sh
 _METRICS=()
 
 # load reporter
