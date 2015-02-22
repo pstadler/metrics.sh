@@ -4,43 +4,67 @@
 INTERVAL=2
 REPORTER=stdout
 
-# init
-source ./lib/utils.sh
-_METRICS=()
+#init
+__METRICS=()
+
+# load utils
+for util in ./lib/utils/*.sh; do source $util; done
 
 # load reporter
 source ./reporters/${REPORTER}.sh
-copy_function report _r_${REPORTER}_report
-unset -f init report terminate
+copy_function init      __r_${REPORTER}_init
+copy_function report    __r_${REPORTER}_report
+copy_function terminate __r_${REPORTER}_terminate
+copy_function docs      __r_${REPORTER}_docs
+unset -f init report terminate docs
 
 # load metrics
-for file in $(find ./metrics -type f -name '*.sh'); do
-  source $file
+for file in ./metrics/*.sh; do
   filename=$(basename $file)
   metric=${filename%.*}
-  copy_function collect _m_${metric}_collect
-  _METRICS+=($metric)
-  unset -f init collect terminate
+
+  # soruce file and copy functions
+  source $file
+  copy_function init      __m_${metric}_init
+  copy_function collect   __m_${metric}_collect
+  copy_function terminate __m_${metric}_terminate
+  copy_function docs      __m_${metric}_docs
+  unset -f init collect terminate docs
+
+  # register metric
+  __METRICS+=($metric)
 done
 
 # init metrics
-for metric in ${_METRICS[@]}; do
-  if ! is_function _m_${metric}_init; then
+for metric in ${__METRICS[@]}; do
+  if ! is_function __m_${metric}_init; then
     continue
   fi
 
-  _m_${metric}_init
+  __m_${metric}_init
+done
+
+# print docs for metrics
+echo "Available metrics:"
+for metric in ${__METRICS[@]}; do
+  if ! is_function __m_${metric}_docs; then
+    continue
+  fi
+
+  echo "[$metric]"
+  __m_${metric}_docs
+  echo
 done
 
 # collect metrics
 while true; do
-  for metric in ${_METRICS[@]}; do
-    if ! is_function _m_${metric}_collect; then
+  for metric in ${__METRICS[@]}; do
+    if ! is_function __m_${metric}_collect; then
       continue
     fi
 
-    result=$(_m_${metric}_collect)
-    _r_${REPORTER}_report $metric $result
+    result=$(__m_${metric}_collect)
+    __r_${REPORTER}_report $metric $result
   done
 
   sleep $INTERVAL
