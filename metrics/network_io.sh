@@ -1,19 +1,14 @@
 #!/bin/sh
 
-if [ -z $NETWORK_IO_INTERFACE ]; then
-  if is_osx; then
-    NETWORK_IO_INTERFACE="en0"
-  else
-    NETWORK_IO_INTERFACE="eth0"
+init () {
+  if [ -z $NETWORK_IO_INTERFACE ]; then
+    if is_osx; then
+      NETWORK_IO_INTERFACE="en0"
+    else
+      NETWORK_IO_INTERFACE="eth0"
+    fi
   fi
-fi
-
-declare -r __network_io_divisor=$[$INTERVAL * 1024]
-__network_io_sample=(0 0)
-
-__network_io_calc_kBps() {
-  echo $1 $2 | awk -v divisor=$__network_io_divisor \
-                '{printf "%.2f", ($1 - $2) / divisor}'
+  readonly __network_io_divisor=$[$INTERVAL * 1024]
 }
 
 if is_osx; then
@@ -28,9 +23,14 @@ else
   }
 fi
 
+__network_io_calc_kBps() {
+  echo $1 $2 | awk -v divisor=$__network_io_divisor \
+                '{printf "%.2f", ($1 - $2) / divisor}'
+}
+
 collect () {
   local sample=( $(__network_io_collect) )
-  if [ ${__network_io_sample[0]} -ne 0 ]; then
+  if [ ! -z $__network_io_sample ]; then
     report "in" $(__network_io_calc_kBps ${sample[0]} ${__network_io_sample[0]})
     report "out" $(__network_io_calc_kBps ${sample[1]} ${__network_io_sample[1]})
   fi

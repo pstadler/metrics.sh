@@ -14,11 +14,13 @@ is_linux ()   { [ $OS_TYPE == 'solaris' ]; }
 is_bsd ()     { [ $OS_TYPE == 'bsd']; }
 is_unknown () { [ $OS_TYPE == 'unknown' ]; }
 
-
-make_temp_dir () {
-  if is_osx; then
+# http://unix.stackexchange.com/a/84980/50905
+if is_osx; then
+  make_temp_dir () {
     mktemp -d -t 'sysmetrics'
-  else
+  }
+else
+  make_temp_dir () {
     mktemp -d
-  fi
-}
+  }
+fi

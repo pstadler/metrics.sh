@@ -1,7 +1,9 @@
 #!/bin/sh
 
 if is_osx; then
-  declare -r __memory_os_memsize=$(sysctl -n hw.memsize)
+  init () {
+    readonly __memory_os_memsize=$(sysctl -n hw.memsize)
+  }
 
   collect () {
     report $(vm_stat | awk -v total_memory=$__memory_os_memsize \

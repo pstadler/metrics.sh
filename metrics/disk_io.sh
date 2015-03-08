@@ -1,12 +1,17 @@
 #!/bin/sh
 
-if [ -z $DISK_IO_MOUNTPOINT ]; then
-  if is_osx; then
-    DISK_IO_MOUNTPOINT="disk0"
-  else
-    DISK_IO_MOUNTPOINT="/dev/vda"
+init () {
+  if [ -z $DISK_IO_MOUNTPOINT ]; then
+    if is_osx; then
+      DISK_IO_MOUNTPOINT="disk0"
+    else
+      DISK_IO_MOUNTPOINT="/dev/vda"
+    fi
   fi
-fi
+  readonly __disk_io_fifo=$__TEMP_DIR/disk_io
+  mkfifo $__disk_io_fifo
+  __disk_io_bgproc &
+}
 
 if is_osx; then
   __disk_io_bgproc () {
@@ -20,19 +25,14 @@ else
   }
 fi
 
-__disk_io_fifo=$__TEMP_DIR/disk_io
-
-init () {
-  __disk_io_bgproc &
-  mkfifo $__disk_io_fifo
-}
-
 collect () {
   report $(cat $__disk_io_fifo)
 }
 
 terminate () {
-  rm $__disk_io_fifo
+  if [ ! -z $__disk_io_fifo ] && [ -f $__disk_io_fifo ]; then
+    rm $__disk_io_fifo
+  fi
 }
 
 docs () {

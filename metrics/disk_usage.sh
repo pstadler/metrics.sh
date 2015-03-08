@@ -1,12 +1,14 @@
 #!/bin/sh
 
-if [ -z $DISK_USAGE_MOUNTPOINT ]; then
-  if is_osx; then
-    DISK_USAGE_MOUNTPOINT="/dev/disk1"
-  else
-    DISK_USAGE_MOUNTPOINT="/dev/vda"
+init () {
+  if [ -z $DISK_USAGE_MOUNTPOINT ]; then
+    if is_osx; then
+      DISK_USAGE_MOUNTPOINT="/dev/disk1"
+    else
+      DISK_USAGE_MOUNTPOINT="/dev/vda"
+    fi
   fi
-fi
+}
 
 collect () {
   report $(df | awk -v disk_regexp="^$DISK_USAGE_MOUNTPOINT" \
