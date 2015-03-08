@@ -4,11 +4,23 @@
 INTERVAL=1
 REPORTER=stdout
 
-#init
-__METRICS=()
-
 # load utils
 for util in ./lib/utils/*.sh; do source $util; done
+
+# init
+__METRICS=()
+__TEMP_DIR=$(make_temp_dir)
+
+# register trap
+trap '
+  for metric in ${__METRICS[@]}; do
+    if ! is_function __m_${metric}_terminate; then
+      continue
+    fi
+    __m_${metric}_terminate
+  done
+  trap - SIGTERM && kill -- -$$ SIGINT SIGTERM EXIT
+' SIGINT SIGTERM EXIT
 
 # load reporter
 source ./reporters/${REPORTER}.sh
@@ -80,6 +92,3 @@ while true; do
 
   sleep $INTERVAL
 done
-
-# trap 'kill $(jobs -pr)' SIGINT SIGTERM EXIT
-# trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
