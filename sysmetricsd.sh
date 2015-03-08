@@ -56,24 +56,24 @@ for metric in ${__METRICS[@]}; do
   echo
 done
 
+report () {
+  local result
+  if [ -z $2 ]; then
+    label=$metric
+    result="$1"
+  else
+    label="$metric.$1"
+    result="$2"
+  fi
+  __r_${REPORTER}_report $label $result
+}
+
 # collect metrics
 while true; do
   for metric in ${__METRICS[@]}; do
     if ! is_function __m_${metric}_collect; then
       continue
     fi
-
-    report () {
-      local result
-      if [ -z $2 ]; then
-        label=$metric
-        result="$1"
-      else
-        label="$metric.$1"
-        result="$2"
-      fi
-      __r_${REPORTER}_report $label $result
-    }
 
     __m_${metric}_collect
   done

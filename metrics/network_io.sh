@@ -8,12 +8,12 @@ if [ -z $NETWORK_IO_INTERFACE ]; then
   fi
 fi
 
-declare -r __network_io_divisor=$(($INTERVAL*1024))
+declare -r __network_io_divisor=$[$INTERVAL * 1024]
 __network_io_sample=(0 0)
 
 __network_io_calc_kBps() {
   echo $1 $2 | awk -v divisor=$__network_io_divisor \
-        '{printf "%.2f", ($1 - $2) / divisor}'
+                '{printf "%.2f", ($1 - $2) / divisor}'
 }
 
 if is_osx; then
@@ -23,7 +23,8 @@ if is_osx; then
   }
 else
   __network_io_collect () {
-    echo TODO
+    cat /proc/net/dev | awk -v iface_regex="$NETWORK_IO_INTERFACE:" \
+                          '$0 ~ iface_regex {print $2" "$10}'
   }
 fi
 
@@ -38,4 +39,5 @@ collect () {
 
 docs () {
   echo "Network traffic in kB/s."
+  echo "\$NETWORK_IO_INTERFACE=$NETWORK_IO_INTERFACE"
 }
