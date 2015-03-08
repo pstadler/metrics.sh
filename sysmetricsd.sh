@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # config
-INTERVAL=2
+INTERVAL=1
 REPORTER=stdout
 
 #init
@@ -63,9 +63,23 @@ while true; do
       continue
     fi
 
-    result=$(__m_${metric}_collect)
-    __r_${REPORTER}_report $metric $result
+    report () {
+      local result
+      if [ -z $2 ]; then
+        label=$metric
+        result="$1"
+      else
+        label="$metric.$1"
+        result="$2"
+      fi
+      __r_${REPORTER}_report $label $result
+    }
+
+    __m_${metric}_collect
   done
 
   sleep $INTERVAL
 done
+
+# trap 'kill $(jobs -pr)' SIGINT SIGTERM EXIT
+# trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT

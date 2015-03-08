@@ -9,8 +9,8 @@ if [ -z $DISK_USAGE_MOUNTPOINT ]; then
 fi
 
 collect () {
-  echo $(df | awk -v disk_regexp="^$DISK_USAGE_MOUNTPOINT" \
-              '$0 ~ disk_regexp {printf "%.1f", $5}')
+  report $(df | awk -v disk_regexp="^$DISK_USAGE_MOUNTPOINT" \
+                  '$0 ~ disk_regexp {printf "%.1f", $5}')
 }
 
 docs () {
