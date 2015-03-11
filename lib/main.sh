@@ -3,11 +3,10 @@ for util in ./lib/utils/*.sh; do source $util; done
 
 # init
 __METRICS=()
-__TEMP_DIR=$(make_temp_dir)
 
-# load reporter
 
 main_load () {
+  # load reporter
   source ./reporters/${REPORTER}.sh
   copy_function init      __r_${REPORTER}_init
   copy_function report    __r_${REPORTER}_report
@@ -34,6 +33,14 @@ main_load () {
 }
 
 main_init () {
+  TEMP_DIR=$(make_temp_dir)
+
+  # register trap
+  trap '
+    main_terminate
+    trap - SIGTERM && kill -- -$$ SIGINT SIGTERM EXIT
+  ' SIGINT SIGTERM EXIT
+
   # init reporter
   if is_function __r_${REPORTER}_init; then
     __r_${REPORTER}_init
@@ -46,19 +53,6 @@ main_init () {
     fi
 
     __m_${metric}_init
-  done
-}
-
-main_docs () {
-  echo "Available metrics:"
-  for metric in ${__METRICS[@]}; do
-    if ! is_function __m_${metric}_docs; then
-      continue
-    fi
-
-    echo "[$metric]"
-    __m_${metric}_docs
-    echo
   done
 }
 
@@ -105,4 +99,22 @@ main_terminate () {
   if is_function __r_${REPORTER}_terminate; then
     __r_${REPORTER}_terminate
   fi
+
+  # delete temporary directory
+  if [ ! -z $TEMP_DIR ] && [ -d $TEMP_DIR ]; then
+    rmdir $TEMP_DIR
+  fi
+}
+
+main_docs () {
+  echo "Available metrics:"
+  for metric in ${__METRICS[@]}; do
+    if ! is_function __m_${metric}_docs; then
+      continue
+    fi
+
+    echo "[$metric]"
+    __m_${metric}_docs
+    echo
+  done
 }

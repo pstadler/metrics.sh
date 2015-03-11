@@ -12,7 +12,7 @@ init () {
 
 collect () {
   report $(df | awk -v disk_regexp="^$DISK_USAGE_MOUNTPOINT" \
-                  '$0 ~ disk_regexp {printf "%.1f", $5}')
+                                '$0 ~ disk_regexp { printf "%.1f", $5 }')
 }
 
 docs () {

@@ -4,7 +4,7 @@ report () {
   local METRIC=$1
   local VALUE=$2
   local DATE=$(iso_date)
-  echo $DATE $METRIC: $VALUE >> $FILE_LOCATION
+  echo "$DATE $METRIC: $VALUE" >> $FILE_LOCATION
 }
 
 init () {

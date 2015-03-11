@@ -8,7 +8,7 @@ init () {
       DISK_IO_MOUNTPOINT="/dev/vda"
     fi
   fi
-  readonly __disk_io_fifo=$__TEMP_DIR/disk_io
+  readonly __disk_io_fifo=$TEMP_DIR/disk_io
   mkfifo $__disk_io_fifo
   __disk_io_bgproc &
 }
@@ -16,7 +16,7 @@ init () {
 if is_osx; then
   __disk_io_bgproc () {
     iostat -K -d -w $INTERVAL $DISK_IO_MOUNTPOINT | while read line; do
-      echo $line | awk '{print $3}' > $__disk_io_fifo
+      echo $line | awk '{ print $3 }' > $__disk_io_fifo
     done
   }
 else
@@ -26,11 +26,11 @@ else
 fi
 
 collect () {
-  report $(cat $__disk_io_fifo)
+  report $(cat < $__disk_io_fifo)
 }
 
 terminate () {
-  if [ ! -z $__disk_io_fifo ] && [ -f $__disk_io_fifo ]; then
+  if [ ! -z $__disk_io_fifo ] && [ -p $__disk_io_fifo ]; then
     rm $__disk_io_fifo
   fi
 }

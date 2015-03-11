@@ -13,19 +13,19 @@ init () {
 
 if is_osx; then
   __network_io_collect () {
-    netstat -bI $NETWORK_IO_INTERFACE | \
-                    awk "/$NETWORK_IO_INTERFACE/"'{print $7" "$10; exit}'
+    netstat -bI $NETWORK_IO_INTERFACE |
+                    awk "/$NETWORK_IO_INTERFACE/"'{ print $7" "$10 }'
   }
 else
   __network_io_collect () {
     cat /proc/net/dev | awk -v iface_regex="$NETWORK_IO_INTERFACE:" \
-                          '$0 ~ iface_regex {print $2" "$10}'
+                                    '$0 ~ iface_regex { print $2" "$10 }'
   }
 fi
 
 __network_io_calc_kBps() {
   echo $1 $2 | awk -v divisor=$__network_io_divisor \
-                '{printf "%.2f", ($1 - $2) / divisor}'
+                '{ printf "%.2f", ($1 - $2) / divisor }'
 }
 
 collect () {
