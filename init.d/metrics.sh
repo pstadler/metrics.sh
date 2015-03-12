@@ -1,14 +1,14 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:          sysmetrics
+# Provides:          metrics.sh
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Should-Start:      $network
 # Should-Stop:       $network
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Start and stop sysmetrics
-# Description:       Controls the main sysmetrics daemon "sysmetricsd.sh"
+# Short-Description: Start and stop metrics.sh
+# Description:       Controls the metrics daemon "metrics.sh"
 ### END INIT INFO
 
 # Author: Patrick Stadler <patrick.stadler@gmail.com
@@ -17,9 +17,9 @@
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC="Collect and forward system metrics"
-NAME=sysmon-stathat
-DAEMON=/usr/sbin/$NAME
+DESC="Collect and report system metrics"
+NAME=metrics.sh
+DAEMON=/usr/bin/$NAME
 DAEMON_ARGS=""
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
