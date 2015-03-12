@@ -26,7 +26,7 @@ else
 fi
 
 collect () {
-  report $(cat < $__disk_io_fifo)
+  report $(cat $__disk_io_fifo)
 }
 
 terminate () {

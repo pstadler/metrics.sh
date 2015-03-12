@@ -73,17 +73,22 @@ main_collect () {
   }
 
   # collect metrics
-  while true; do
-    for metric in ${__METRICS[@]}; do
-      if ! is_function __m_${metric}_collect; then
-        continue
-      fi
+  for metric in ${__METRICS[@]}; do
+    if ! is_function __m_${metric}_collect; then
+      continue
+    fi
 
+    fork () {
       __m_${metric}_collect
-    done
-
-    sleep $INTERVAL
+      sleep $INTERVAL
+      fork
+    }
+    fork &
+    unset -f fork
   done
+
+  # run forever
+  tail -f /dev/null # `sleep infinity` is not portable
 }
 
 main_terminate () {

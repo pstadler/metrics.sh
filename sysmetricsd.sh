@@ -2,16 +2,16 @@
 
 # config
 INTERVAL=1
-REPORTER=stdout
+REPORTER=stdout # TODO: handle multiple reporters
 
 
 # handle opts
-opts_spec=":dvh-:"
+opts_spec=":dhvr:"
 opt_docs=false
 opt_verbose=false
 
 usage () {
-  echo "usage: $0 [-d] [-h]"
+  echo "usage: $0 [-d] [-h] [-v] [-r]"
 }
 
 help () {
@@ -23,12 +23,15 @@ while getopts "$opts_spec" opt; do
     d)
       opt_docs=true
       ;;
-    v)
-      opt_verbose=true
-      ;;
     h)
       help
       exit
+      ;;
+    v)
+      opt_verbose=true
+      ;;
+    r)
+      REPORTER=$OPTARG
       ;;
     *)
       usage
@@ -50,6 +53,7 @@ verbose "OS detected: $OS_TYPE"
 
 main_load
 verbose "Metrics loaded: ${__METRICS[@]}"
+verbose "Reporters loaded: ${REPORTER}"
 
 if [ "$opt_docs" = true ]; then
   main_docs
