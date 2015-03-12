@@ -106,7 +106,7 @@ main_terminate () {
   fi
 
   # delete temporary directory
-  if [ ! -z $TEMP_DIR ] && [ -d $TEMP_DIR ]; then
+  if [ -d $TEMP_DIR ]; then
     rmdir $TEMP_DIR
   fi
 }
