@@ -3,7 +3,7 @@
 init () {
   if [ -z $FILE_LOCATION ]; then
     echo "Missing configuration: \$FILE_LOCATION"
-    return 1
+    exit 1
   fi
 
   if [ ! -f $FILE_LOCATION ]; then

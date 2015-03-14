@@ -10,12 +10,12 @@ LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
 
 # handle opts
-opts_spec=":dhvr:"
+opts_spec=":dhv:r:i:"
 opt_docs=false
 opt_verbose=false
 
 usage () {
-  echo "Usage: $0 [-d] [-h] [-v] [-r]"
+  echo "Usage: $0 [-d] [-h] [-v] [-r repoter] [-i interval]"
 }
 
 help () {
@@ -36,6 +36,9 @@ while getopts "$opts_spec" opt; do
       ;;
     r)
       REPORTER=$OPTARG
+      ;;
+    i)
+      INTERVAL=$OPTARG
       ;;
     *)
       usage
