@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # config
-INTERVAL=1
+INTERVAL=5
 REPORTER=stdout # TODO: handle multiple reporters
 
 # env
@@ -10,12 +10,12 @@ LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
 
 # handle opts
-opts_spec=":dhvr:"
+opts_spec=":dhvri:"
 opt_docs=false
 opt_verbose=false
 
 usage () {
-  echo "usage: $0 [-d] [-h] [-v] [-r]"
+  echo "Usage: $0 [-d] [-h] [-v] [-r] [-i]"
 }
 
 help () {
@@ -36,6 +36,9 @@ while getopts "$opts_spec" opt; do
       ;;
     r)
       REPORTER=$OPTARG
+      ;;
+    i)
+      INTERVAL=$OPTARG
       ;;
     *)
       usage

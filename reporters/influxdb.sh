@@ -10,7 +10,8 @@ init () {
 report () {
   local METRIC=$1
   local VALUE=$2
-  curl -X POST -d "[{\"name\":\"$METRIC\",\"columns\":[\"value\"],\"points\":[[$VALUE]]}]" $INFLUXDB_API_ENDPOINT
+  curl -X POST $INFLUXDB_API_ENDPOINT \
+    -d "[{\"name\":\"$METRIC\",\"columns\":[\"value\"],\"points\":[[$VALUE]]}]"
 }
 
 docs () {
