@@ -22,8 +22,8 @@ init() {
 }
 
 report () {
-  METRIC=$1
-  VALUE=$2
+  local METRIC=$1
+  local VALUE=$2
   curl -s $__keen_io_api_url -H "Content-Type: application/json" \
                   -d "{\"metric\": \"$METRIC\", \"value\": $VALUE}" > /dev/null
 }

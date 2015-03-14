@@ -1,8 +1,8 @@
 #!/bin/sh
 
 report () {
-  METRIC=$1
-  VALUE=$2
+  local METRIC=$1
+  local VALUE=$2
   echo $METRIC: $VALUE
 }
 

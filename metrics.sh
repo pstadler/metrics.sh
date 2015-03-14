@@ -5,9 +5,9 @@ INTERVAL=1
 REPORTER=stdout # TODO: handle multiple reporters
 
 # env
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LANGUAGE=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8
+LANGUAGE=en_US.UTF-8
 
 # handle opts
 opts_spec=":dhvr:"

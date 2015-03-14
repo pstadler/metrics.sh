@@ -8,8 +8,8 @@ init () {
 }
 
 report () {
-  METRIC=$1
-  VALUE=$2
+  local METRIC=$1
+  local VALUE=$2
   curl -s -d "stat=$METRIC&ezkey=$STATHAT_API_KEY&value=$VALUE" \
                                       http://api.stathat.com/ez > /dev/null
 }
