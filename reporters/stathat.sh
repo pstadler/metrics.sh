@@ -2,15 +2,16 @@
 
 init () {
   if [ -z $STATHAT_API_KEY ]; then
-    echo "Error: stathat requires \$STATHAT_API_KEY to be set"
+    echo "Error: stathat requires \$STATHAT_API_KEY to be specified"
     exit 1
   fi
 }
 
 report () {
-  local METRIC=$1
-  local VALUE=$2
-  curl -s -d "stat=$METRIC&ezkey=$STATHAT_API_KEY&value=$VALUE" \
+  local metric=$1
+  local value=$2
+
+  curl -s -d "ezkey=$STATHAT_API_KEY&stat=$metric&value=$value" \
                                       http://api.stathat.com/ez > /dev/null
 }
 

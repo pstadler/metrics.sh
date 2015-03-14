@@ -2,7 +2,7 @@
 
 init () {
   if [ -z $FILE_LOCATION ]; then
-    echo "Missing configuration: \$FILE_LOCATION"
+    echo "Error: file reporter requires \$FILE_LOCATION to be specified"
     exit 1
   fi
 
@@ -12,10 +12,10 @@ init () {
 }
 
 report () {
-  local METRIC=$1
-  local VALUE=$2
-  local DATE=$(iso_date)
-  echo "$DATE $METRIC: $VALUE" >> $FILE_LOCATION
+  local metric=$1
+  local value=$2
+  local datetime=$(iso_date)
+  echo "$datetime $metric: $value" >> $FILE_LOCATION
 }
 
 docs () {

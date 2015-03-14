@@ -2,7 +2,7 @@
 
 init () {
   if [ -z $INFLUXDB_API_ENDPOINT ]; then
-    echo "Error: influxdb requires \$INFLUXDB_API_ENDPOINT to be set"
+    echo "Error: influxdb requires \$INFLUXDB_API_ENDPOINT to be specified"
     exit 1
   fi
 
@@ -18,15 +18,17 @@ init () {
 }
 
 report () {
-  local METRIC=$1
-  local VALUE=$2
+  local metric=$1
+  local value=$2
+  local points
   if [ "$INFLUXDB_SEND_HOSTNAME" = true ]; then
-    local POINTS="[$VALUE,\"$HOSTNAME\"]"
+    points="[$value,\"$HOSTNAME\"]"
   else
-    local POINTS="[$VALUE]"
+    points="[$value]"
   fi
+
   curl -X POST $INFLUXDB_API_ENDPOINT \
-    -d "[{\"name\":\"$METRIC\",\"columns\":$__influxdb_columns,\"points\":[$POINTS]}]"
+    -d "[{\"name\":\"$metric\",\"columns\":$__influxdb_columns,\"points\":[$points]}]"
 }
 
 docs () {

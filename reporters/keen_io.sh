@@ -2,12 +2,12 @@
 
 init() {
   if [ -z $KEEN_IO_PROJECT_ID ]; then
-    echo "Error: keen_io requires \$KEEN_IO_PROJECT_ID to be set"
+    echo "Error: keen_io requires \$KEEN_IO_PROJECT_ID to be specified"
     exit 1
   fi
 
   if [ -z $KEEN_IO_WRITE_KEY ]; then
-    echo "Error: keen_io requires \$KEEN_IO_WRITE_KEY to be set"
+    echo "Error: keen_io requires \$KEEN_IO_WRITE_KEY to be specified"
     exit 1
   fi
 
@@ -22,10 +22,11 @@ init() {
 }
 
 report () {
-  local METRIC=$1
-  local VALUE=$2
+  local metric=$1
+  local value=$2
+
   curl -s $__keen_io_api_url -H "Content-Type: application/json" \
-                  -d "{\"metric\": \"$METRIC\", \"value\": $VALUE}" > /dev/null
+                  -d "{\"metric\":\"$metric\",\"value\":$value}" > /dev/null
 }
 
 docs () {

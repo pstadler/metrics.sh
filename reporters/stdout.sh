@@ -1,9 +1,10 @@
 #!/bin/sh
 
 report () {
-  local METRIC=$1
-  local VALUE=$2
-  echo $METRIC: $VALUE
+  local metric=$1
+  local value=$2
+
+  echo $metric: $value
 }
 
 docs () {

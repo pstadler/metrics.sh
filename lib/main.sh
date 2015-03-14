@@ -3,23 +3,31 @@ for util in ./lib/utils/*.sh; do source $util; done
 
 # init
 __METRICS=()
-
+__REPORTERS=()
 
 main_load () {
   # load reporter
-  source ./reporters/${REPORTER}.sh
-  copy_function init      __r_${REPORTER}_init
-  copy_function report    __r_${REPORTER}_report
-  copy_function terminate __r_${REPORTER}_terminate
-  copy_function docs      __r_${REPORTER}_docs
-  unset -f init report terminate docs
+  for file in ./reporters/*.sh; do
+    local filename=$(basename $file)
+    local reporter=${filename%.*}
+
+    # source reporter and copy functions
+    source $file
+    copy_function init      __r_${reporter}_init
+    copy_function report    __r_${reporter}_report
+    copy_function terminate __r_${reporter}_terminate
+    copy_function docs      __r_${reporter}_docs
+    unset -f init report terminate docs
+
+    __REPORTERS+=($reporter)
+  done
 
   # load metrics
   for file in ./metrics/*.sh; do
-    filename=$(basename $file)
-    metric=${filename%.*}
+    local filename=$(basename $file)
+    local metric=${filename%.*}
 
-    # soruce file and copy functions
+    # soruce metric and copy functions
     source $file
     copy_function init      __m_${metric}_init
     copy_function collect   __m_${metric}_collect
@@ -59,7 +67,7 @@ main_init () {
 main_collect () {
   # used by metrics to return results
   report () {
-    local _r_result
+    local _r_label _r_result
     if [ -z $2 ]; then
       _r_label=$metric
       _r_result="$1"
@@ -112,14 +120,26 @@ main_terminate () {
 }
 
 main_docs () {
-  echo "Available metrics:"
+  echo "# Metrics"
   for metric in ${__METRICS[@]}; do
     if ! is_function __m_${metric}_docs; then
       continue
     fi
 
+    echo
     echo "[$metric]"
     __m_${metric}_docs
+  done
+
+  echo
+  echo "# REPORTERS"
+  for reporter in ${__REPORTERS[@]}; do
+    if ! is_function __r_${reporter}_docs; then
+      continue
+    fi
+
     echo
+    echo "[$reporter]"
+    __r_${reporter}_docs
   done
 }
