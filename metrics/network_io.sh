@@ -8,7 +8,7 @@ init () {
       NETWORK_IO_INTERFACE="eth0"
     fi
   fi
-  readonly __network_io_divisor=$[$INTERVAL * 1024]
+  readonly __network_io_divisor=$(($INTERVAL * 1024))
 }
 
 if is_osx; then

@@ -1,3 +1,5 @@
+#!/bin/sh
+
 VERBOSE_MODE=false
 
 verbose_on () {

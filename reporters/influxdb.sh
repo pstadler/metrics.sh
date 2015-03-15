@@ -12,6 +12,7 @@ init () {
 
   if [ "$INFLUXDB_SEND_HOSTNAME" = true ]; then
     __influxdb_columns="[\"value\",\"host\"]"
+    __influxdb_hostname=$(hostname)
   else
     __influxdb_columns="[\"value\"]"
   fi
@@ -22,7 +23,7 @@ report () {
   local value=$2
   local points
   if [ "$INFLUXDB_SEND_HOSTNAME" = true ]; then
-    points="[$value,\"$HOSTNAME\"]"
+    points="[$value,\"$__influxdb_hostname\"]"
   else
     points="[$value]"
   fi

@@ -3,6 +3,7 @@
 # config
 INTERVAL=2
 REPORTER=stdout
+METRICS=cpu,disk_io,disk_usage,heartbeat,memory,network_io,swap
 
 # env
 LC_ALL=en_US.UTF-8
@@ -15,7 +16,7 @@ opt_docs=false
 opt_verbose=false
 
 usage () {
-  echo "  Usage: $0 [-d] [-h] [-v] [-r reporter] [-i interval]"
+  echo "  Usage: $0 [-d] [-h] [-v] [-m metrics] [-r reporter] [-i interval]"
 }
 
 help () {
@@ -24,16 +25,22 @@ help () {
   echo
   echo "  Options: "
   echo
-  echo "    -r, --reporter <reporter>  use specified reporter (default: stdout)"
-  echo "    -i, --interval <seconds>   collect metrics every n seconds (default: 2)"
-  echo "    -v, --verbose              enable verbose mode"
-  echo "    -d, --docs                 show documentation"
-  echo "    -h, --help                 show this text"
+  echo "    -m, --metrics  <metric1,...>  use specified metrics"
+  echo "    -r, --reporter <reporter>     use specified reporter (default: stdout)"
+  echo "    -i, --interval <seconds>      collect metrics every n seconds (default: 2)"
+  echo "    -v, --verbose                 enable verbose mode"
+  echo "    -d, --docs                    show documentation"
+  echo "    -h, --help                    show this text"
   echo
 }
 
 while [ $# -gt 0 ]; do
   case $1 in
+    -m|--metrics)
+      shift
+      METRICS=$1
+      ;;
+
     -r|--reporter)
       shift
       REPORTER=$1
@@ -66,9 +73,8 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-
 # run
-source ./lib/main.sh
+. ./lib/main.sh
 
 if [ $opt_verbose = "true" ]; then
   verbose_on
@@ -77,16 +83,17 @@ fi
 verbose "OS detected: $OS_TYPE"
 
 main_load
-verbose "Metrics loaded: ${__METRICS[@]}"
-verbose "Reporters loaded: ${REPORTER}"
+verbose "Available metrics: $__AVAILABLE_METRICS"
+verbose "Available reporters: $__AVAILABLE_REPORTERS"
 
 if [ "$opt_docs" = true ]; then
   main_docs
   exit
 fi
 
-main_init
-verbose "Metrics initialized"
+main_init $METRICS $REPORTER
+verbose "Using metrics: $__METRICS"
+verbose "Using reporter: $__REPORTER"
 
 verbose "Collecting metrics every $INTERVAL second(s)"
 main_collect

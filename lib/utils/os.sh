@@ -1,6 +1,6 @@
 #!/bin/sh
 
-declare -r OS_TYPE=$(case "$OSTYPE" in
+readonly OS_TYPE=$(case "$OSTYPE" in
   (solaris*) echo solaris;;
   (darwin*)  echo osx;;
   (linux*)   echo linux;;
@@ -8,11 +8,11 @@ declare -r OS_TYPE=$(case "$OSTYPE" in
   (*)        echo unknown;;
 esac)
 
-is_solaris () { [ $OS_TYPE == 'solaris' ]; }
-is_osx ()     { [ $OS_TYPE == 'osx' ]; }
-is_linux ()   { [ $OS_TYPE == 'solaris' ]; }
-is_bsd ()     { [ $OS_TYPE == 'bsd']; }
-is_unknown () { [ $OS_TYPE == 'unknown' ]; }
+is_solaris () { [ $OS_TYPE = 'solaris' ]; }
+is_osx ()     { [ $OS_TYPE = 'osx' ]; }
+is_linux ()   { [ $OS_TYPE = 'solaris' ]; }
+is_bsd ()     { [ $OS_TYPE = 'bsd']; }
+is_unknown () { [ $OS_TYPE = 'unknown' ]; }
 
 # http://unix.stackexchange.com/a/84980/50905
 if is_osx; then

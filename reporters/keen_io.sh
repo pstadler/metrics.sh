@@ -12,7 +12,7 @@ init() {
   fi
 
   if [ -z $KEEN_IO_EVENT_COLLECTION ]; then
-    KEEN_IO_EVENT_COLLECTION=$HOSTNAME
+    KEEN_IO_EVENT_COLLECTION=$(hostname)
   fi
 
   __keen_io_api_url="https://api.keen.io/3.0"
@@ -33,5 +33,5 @@ docs () {
   echo "Send data to Keen IO (https://keen.io)."
   echo "\$KEEN_IO_WRITE_KEY=<write_key>"
   echo "\$KEEN_IO_PROJECT_ID=<project_id>"
-  echo "\$KEEN_IO_EVENT_COLLECTION=$HOSTNAME"
+  echo "\$KEEN_IO_EVENT_COLLECTION=$(hostname)"
 }

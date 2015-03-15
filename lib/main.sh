@@ -1,9 +1,13 @@
+#!/bin/sh
+
 # load utils
-for util in ./lib/utils/*.sh; do source $util; done
+for util in ./lib/utils/*.sh; do
+  . $util
+done
 
 # init
-__METRICS=()
-__REPORTERS=()
+__AVAILABLE_METRICS=
+__AVAILABLE_REPORTERS=
 
 main_load () {
   # load reporter
@@ -12,14 +16,14 @@ main_load () {
     local reporter=${filename%.*}
 
     # source reporter and copy functions
-    source $file
+    . $file
     copy_function init      __r_${reporter}_init
     copy_function report    __r_${reporter}_report
     copy_function terminate __r_${reporter}_terminate
     copy_function docs      __r_${reporter}_docs
     unset -f init report terminate docs
 
-    __REPORTERS+=($reporter)
+    __AVAILABLE_REPORTERS=$(trim "$__AVAILABLE_REPORTERS $reporter")
   done
 
   # load metrics
@@ -28,7 +32,7 @@ main_load () {
     local metric=${filename%.*}
 
     # soruce metric and copy functions
-    source $file
+    . $file
     copy_function init      __m_${metric}_init
     copy_function collect   __m_${metric}_collect
     copy_function terminate __m_${metric}_terminate
@@ -36,11 +40,16 @@ main_load () {
     unset -f init collect terminate docs
 
     # register metric
-    __METRICS+=($metric)
+    __AVAILABLE_METRICS=$(trim "$__AVAILABLE_METRICS $metric")
   done
 }
 
 main_init () {
+  # handle args
+  __METRICS=$(echo $1 | sed 's/,/ /g')
+  __REPORTER=$2
+
+  # create temp dir
   TEMP_DIR=$(make_temp_dir)
 
   # register trap
@@ -49,13 +58,27 @@ main_init () {
     trap - SIGTERM && kill -- -$$ SIGINT SIGTERM EXIT
   ' SIGINT SIGTERM EXIT
 
+  # check if reporter exists
+  if ! in_array $__REPORTER "$__AVAILABLE_REPORTERS"; then
+    echo "Error: reporter '$__REPORTER' is not available"
+    exit 1
+  fi
+
+  # check if metrics exist
+  for metric in $__METRICS; do
+    if ! in_array $metric "$__AVAILABLE_METRICS"; then
+      echo "Error: metric '$metric' is not available"
+      exit 1
+    fi
+  done
+
   # init reporter
-  if is_function __r_${REPORTER}_init; then
-    __r_${REPORTER}_init
+  if is_function __r_${__REPORTER}_init; then
+    __r_${__REPORTER}_init
   fi
 
   # init metrics
-  for metric in ${__METRICS[@]}; do
+  for metric in $__METRICS; do
     if ! is_function __m_${metric}_init; then
       continue
     fi
@@ -76,32 +99,33 @@ main_collect () {
       _r_result="$2"
     fi
     if is_number $_r_result; then
-      __r_${REPORTER}_report $_r_label $_r_result
+      __r_${__REPORTER}_report $_r_label $_r_result
     fi
   }
 
   # collect metrics
-  for metric in ${__METRICS[@]}; do
+  for metric in $__METRICS; do
     if ! is_function __m_${metric}_collect; then
       continue
     fi
 
     fork () {
-      __m_${metric}_collect
-      sleep $INTERVAL
-      fork
+      while true; do
+        __m_${metric}_collect
+        sleep $INTERVAL
+      done
     }
     fork &
     unset -f fork
   done
 
   # run forever
-  tail -f /dev/null # `sleep infinity` is not portable
+  sleep 2147483647 # `sleep infinity` is not portable
 }
 
 main_terminate () {
   # terminate metrics
-  for metric in ${__METRICS[@]}; do
+  for metric in $__METRICS; do
     if ! is_function __m_${metric}_terminate; then
       continue
     fi
@@ -109,8 +133,8 @@ main_terminate () {
   done
 
   # terminate reporter
-  if is_function __r_${REPORTER}_terminate; then
-    __r_${REPORTER}_terminate
+  if is_function __r_${__REPORTER}_terminate; then
+    __r_${__REPORTER}_terminate
   fi
 
   # delete temporary directory
@@ -121,7 +145,7 @@ main_terminate () {
 
 main_docs () {
   echo "# Metrics"
-  for metric in ${__METRICS[@]}; do
+  for metric in $__AVAILABLE_METRICS; do
     if ! is_function __m_${metric}_docs; then
       continue
     fi
@@ -133,7 +157,7 @@ main_docs () {
 
   echo
   echo "# REPORTERS"
-  for reporter in ${__REPORTERS[@]}; do
+  for reporter in $__AVAILABLE_REPORTERS; do
     if ! is_function __r_${reporter}_docs; then
       continue
     fi
