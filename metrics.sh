@@ -10,11 +10,6 @@ LC_ALL=en_US.UTF-8
 LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
 
-# handle opts
-opts_spec=":dhvr:i:"
-opt_docs=false
-opt_verbose=false
-
 usage () {
   echo "  Usage: $0 [-d] [-h] [-v] [-m metrics] [-r reporter] [-i interval]"
 }
@@ -33,6 +28,10 @@ help () {
   echo "    -h, --help                    show this text"
   echo
 }
+
+# handle opts
+opt_docs=false
+opt_verbose=false
 
 while [ $# -gt 0 ]; do
   case $1 in
@@ -86,7 +85,7 @@ main_load
 verbose "Available metrics: $__AVAILABLE_METRICS"
 verbose "Available reporters: $__AVAILABLE_REPORTERS"
 
-if [ "$opt_docs" = true ]; then
+if [ $opt_docs = true ]; then
   main_docs
   exit
 fi
