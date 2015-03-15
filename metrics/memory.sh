@@ -13,8 +13,8 @@ if is_osx; then
   }
 else
   collect () {
-    report $(free | awk '/buffers\/cache/
-                          { printf "%.1f", 100 - $4 / ($3 + $4) * 100.0 }')
+    report $(free | awk '/buffers\/cache/ {
+                              printf "%.1f", 100 - $4 / ($3 + $4) * 100.0 }')
   }
 fi
 
