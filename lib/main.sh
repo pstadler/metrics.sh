@@ -15,13 +15,7 @@ main_load () {
     local filename=$(basename $file)
     local reporter=${filename%.*}
 
-    # source reporter and copy functions
-    . $file
-    copy_function init      __r_${reporter}_init
-    copy_function report    __r_${reporter}_report
-    copy_function terminate __r_${reporter}_terminate
-    copy_function docs      __r_${reporter}_docs
-    unset -f init report terminate docs
+    load_reporter_with_prefix __r_${reporter}_ $file
 
     __AVAILABLE_REPORTERS=$(trim "$__AVAILABLE_REPORTERS $reporter")
   done
@@ -31,13 +25,7 @@ main_load () {
     local filename=$(basename $file)
     local metric=${filename%.*}
 
-    # soruce metric and copy functions
-    . $file
-    copy_function init      __m_${metric}_init
-    copy_function collect   __m_${metric}_collect
-    copy_function terminate __m_${metric}_terminate
-    copy_function docs      __m_${metric}_docs
-    unset -f init collect terminate docs
+    load_metric_with_prefix __m_${metric}_ $file
 
     # register metric
     __AVAILABLE_METRICS=$(trim "$__AVAILABLE_METRICS $metric")
@@ -109,14 +97,11 @@ main_collect () {
       continue
     fi
 
-    fork () {
-      while true; do
+    # fork
+    (while true; do
         __m_${metric}_collect
         sleep $INTERVAL
-      done
-    }
-    fork &
-    unset -f fork
+    done) &
   done
 
   # run forever

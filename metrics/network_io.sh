@@ -13,8 +13,7 @@ init () {
 
 if is_osx; then
   __network_io_collect () {
-    netstat -bI $NETWORK_IO_INTERFACE |
-                    awk "/$NETWORK_IO_INTERFACE/"'{ print $7" "$10 }'
+    netstat -b -I $NETWORK_IO_INTERFACE | awk '{ print $7" "$10 }' | tail -n 1
   }
 else
   __network_io_collect () {
@@ -29,12 +28,14 @@ __network_io_calc_kBps() {
 }
 
 collect () {
-  local sample=( $(__network_io_collect) )
-  if [ ! -z $__network_io_sample ]; then
-    report "in" $(__network_io_calc_kBps ${sample[0]} ${__network_io_sample[0]})
-    report "out" $(__network_io_calc_kBps ${sample[1]} ${__network_io_sample[1]})
+  local sample=$(__network_io_collect)
+  if [ ! -z "$__network_io_sample" ]; then
+    report "in" $(__network_io_calc_kBps $(echo $sample | awk '{print $1}') \
+                                $(echo $__network_io_sample | awk '{print $1}'))
+    report "out" $(__network_io_calc_kBps $(echo $sample | awk '{print $2}') \
+                                $(echo $__network_io_sample | awk '{print $2}'))
   fi
-  __network_io_sample=( "${sample[@]}" )
+  __network_io_sample="$sample"
 }
 
 docs () {
