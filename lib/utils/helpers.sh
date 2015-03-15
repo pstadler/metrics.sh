@@ -11,7 +11,7 @@ iso_date () {
 in_array () {
   local item=$1
   local arr=$2
-  [[ " $2 " = *" $1 "* ]]
+  echo " $2 " | grep -q " $1 "
 }
 
 trim () {

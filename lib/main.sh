@@ -55,8 +55,8 @@ main_init () {
   # register trap
   trap '
     main_terminate
-    trap - SIGTERM && kill -- -$$ SIGINT SIGTERM EXIT
-  ' SIGINT SIGTERM EXIT
+    trap - TERM && kill -- -$$ INT TERM EXIT
+  ' INT TERM EXIT
 
   # check if reporter exists
   if ! in_array $__REPORTER "$__AVAILABLE_REPORTERS"; then
