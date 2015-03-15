@@ -34,5 +34,5 @@ report () {
 docs () {
   echo "Send data to InfluxDB."
   echo "\$INFLUXDB_API_ENDPOINT="
-  echo "\$INFLUXDB_SEND_HOSTNAME=$INFLUXDB_SEND_HOSTNAME"
+  echo "\$INFLUXDB_SEND_HOSTNAME=true"
 }

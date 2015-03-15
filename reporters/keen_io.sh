@@ -33,5 +33,5 @@ docs () {
   echo "Send data to Keen IO (https://keen.io)."
   echo "\$KEEN_IO_WRITE_KEY=<write_key>"
   echo "\$KEEN_IO_PROJECT_ID=<project_id>"
-  echo "\$KEEN_IO_EVENT_COLLECTION=$KEEN_IO_EVENT_COLLECTION"
+  echo "\$KEEN_IO_EVENT_COLLECTION=$HOSTNAME"
 }

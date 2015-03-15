@@ -2,7 +2,7 @@
 
 # config
 INTERVAL=2
-REPORTER=stdout # TODO: handle multiple reporters
+REPORTER=stdout
 
 # env
 LC_ALL=en_US.UTF-8
@@ -15,38 +15,56 @@ opt_docs=false
 opt_verbose=false
 
 usage () {
-  echo "Usage: $0 [-d] [-h] [-v] [-r reporter] [-i interval]"
+  echo "  Usage: $0 [-d] [-h] [-v] [-r reporter] [-i interval]"
 }
 
 help () {
-  echo "TODO"
+  echo
+  usage
+  echo
+  echo "  Options: "
+  echo
+  echo "    -r, --reporter <reporter>  use specified reporter (default: stdout)"
+  echo "    -i, --interval <seconds>   collect metrics every n seconds (default: 2)"
+  echo "    -v, --verbose              enable verbose mode"
+  echo "    -d, --docs                 show documentation"
+  echo "    -h, --help                 show this text"
+  echo
 }
 
-while getopts "$opts_spec" opt; do
-  case "${opt}" in
-    d)
+while [ $# -gt 0 ]; do
+  case $1 in
+    -r|--reporter)
+      shift
+      REPORTER=$1
+      ;;
+
+    -i|--interval)
+      shift
+      INTERVAL=$1
+      ;;
+
+    -v|-verbose)
+      opt_verbose=true
+      ;;
+
+    -d|--docs)
       opt_docs=true
       ;;
-    h)
+
+    -h|--help)
       help
       exit
       ;;
-    v)
-      opt_verbose=true
-      ;;
-    r)
-      REPORTER=$OPTARG
-      ;;
-    i)
-      INTERVAL=$OPTARG
-      ;;
+
     *)
       usage
       exit 1
       ;;
   esac
+
+  shift
 done
-shift $((OPTIND-1))
 
 
 # run

@@ -37,5 +37,5 @@ terminate () {
 
 docs () {
   echo "Disk I/O in MB/s."
-  echo "\$DISK_IO_MOUNTPOINT=$DISK_IO_MOUNTPOINT"
+  echo "\$DISK_IO_MOUNTPOINT="
 }

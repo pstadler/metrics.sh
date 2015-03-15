@@ -39,5 +39,5 @@ collect () {
 
 docs () {
   echo "Network traffic in kB/s."
-  echo "\$NETWORK_IO_INTERFACE=$NETWORK_IO_INTERFACE"
+  echo "\$NETWORK_IO_INTERFACE="
 }

@@ -20,5 +20,5 @@ report () {
 
 docs () {
   echo "Write to a file or named pipe."
-  echo "\$FILE_LOCATION=$FILE_LOCATION"
+  echo "\$FILE_LOCATION="
 }
