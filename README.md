@@ -44,7 +44,7 @@ network_io    | Network I/O in kB/s
 disk_io       | Disk I/O in MB/s
 disk_usage    | Disk usage in %
 heartbeat     | System heartbeat
-ping          | Check if remote host is reachable
+ping          | Check whether a remote host is reachable
 
 TODO: how to write custom metrics
 
