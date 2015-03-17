@@ -21,7 +21,7 @@ if is_osx; then
   }
 else
   __disk_io_bgproc () {
-    iostat -y -m -d 1 $DISK_IO_MOUNTPOINT | while read line; do
+    iostat -y -m -d $INTERVAL $DISK_IO_MOUNTPOINT | while read line; do
       echo $line | awk '/[0-9.]/{ print $3 }' > $__disk_io_fifo
     done
   }

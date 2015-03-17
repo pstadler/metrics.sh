@@ -28,7 +28,8 @@ __network_io_calc_kBps() {
 }
 
 collect () {
-  local sample=$(__network_io_collect)
+  local sample
+  sample=$(__network_io_collect)
   if [ ! -z "$__network_io_sample" ]; then
     report "in" $(__network_io_calc_kBps $(echo $sample | awk '{print $1}') \
                                 $(echo $__network_io_sample | awk '{print $1}'))
