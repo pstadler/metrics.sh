@@ -20,12 +20,12 @@ help () {
   echo
   echo "  Options: "
   echo
-  echo "    -m, --metrics  <metric1,...>  use specified metrics"
-  echo "    -r, --reporter <reporter>     use specified reporter (default: stdout)"
-  echo "    -i, --interval <seconds>      collect metrics every n seconds (default: 2)"
-  echo "    -v, --verbose                 enable verbose mode"
-  echo "    -d, --docs                    show documentation"
-  echo "    -h, --help                    show this text"
+  echo "    -m, --metrics  <metrics>   comma-separated list of metrics to collect"
+  echo "    -r, --reporter <reporter>  use specified reporter (default: stdout)"
+  echo "    -i, --interval <seconds>   collect metrics every n seconds (default: 2)"
+  echo "    -v, --verbose              enable verbose mode"
+  echo "    -d, --docs                 show documentation"
+  echo "    -h, --help                 show this text"
   echo
 }
 

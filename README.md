@@ -5,10 +5,13 @@ metrics.sh is a metrics collection and fowarding daemon implemented in portable 
 ## Usage
 
 ```
-  Usage: ./metrics.sh [-d] [-h] [-v] [-r reporter] [-i interval]
+$ ./metrics.sh --help
+
+  Usage: ./metrics.sh [-d] [-h] [-v] [-m metrics] [-r reporter] [-i interval]
 
   Options:
 
+    -m, --metrics  <metrics>   comma-separated list of metrics to collect
     -r, --reporter <reporter>  use specified reporter (default: stdout)
     -i, --interval <seconds>   collect metrics every n seconds (default: 2)
     -v, --verbose              enable verbose mode
@@ -26,7 +29,7 @@ TODO: /etc/init.d
 
 ### Requirements
 
-metrics.sh has been tested on Ubuntu and Mac OS X but is supposed to run on most *NIX-line operating systems. Some of the provided metrics require [procfs](http://en.wikipedia.org/wiki/Procfs) to be available (check with `[ -d /proc ] && echo available || echo not available`).
+metrics.sh has been tested on Ubuntu and Mac OS X but is supposed to run on most *NIX-line operating systems. Some of the provided metrics require [procfs](http://en.wikipedia.org/wiki/Procfs) to be available.
 
 ## Metrics
 
