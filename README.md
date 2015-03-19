@@ -1,8 +1,6 @@
 # metrics.sh
 
-metrics.sh is a lightweight metrics collection and fowarding utility implemented in portable POSIX compliant shell scripts. A transparent interface based on hooks enables writing custom metric collectors and forwarders in an elegant way.
-
-Besides having a low impact on system resources, which makes metric.sh a suitable solution for running in virtual environments and servers with limited capacities, simplicty is the main goal of this project, hence its documentation shall fit in a single README.
+metrics.sh is a lightweight metrics collection and fowarding utility implemented in portable POSIX compliant shell scripts. A transparent interface based on hooks enables writing custom metric collectors and reporters in an elegant way.
 
 ## Usage
 
@@ -13,6 +11,7 @@ $ ./metrics.sh --help
 
   Options:
 
+    -c, --config   <file>      path to config file
     -m, --metrics  <metrics>   comma-separated list of metrics to collect
     -r, --reporter <reporter>  use specified reporter (default: stdout)
     -i, --interval <seconds>   collect metrics every n seconds (default: 2)
@@ -31,7 +30,7 @@ TODO: /etc/init.d
 
 ### Requirements
 
-metrics.sh has been tested on Ubuntu and Mac OS X but is supposed to run on most *NIX-line operating systems. Some of the provided metrics require [procfs](http://en.wikipedia.org/wiki/Procfs) to be available.
+metrics.sh has been tested on Ubuntu and Mac OS X but is supposed to run on most *NIX-like operating systems. Some of the provided metrics require [procfs](http://en.wikipedia.org/wiki/Procfs) to be available.
 
 ## Metrics
 

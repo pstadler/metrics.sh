@@ -4,6 +4,7 @@
 INTERVAL=2
 REPORTER=stdout
 METRICS=cpu,disk_io,disk_usage,heartbeat,memory,network_io,swap
+CONFIG_FILE=
 
 # env
 LC_ALL=en_US.UTF-8
@@ -20,6 +21,7 @@ help () {
   echo
   echo "  Options: "
   echo
+  echo "    -c, --config   <file>      path to config file"
   echo "    -m, --metrics  <metrics>   comma-separated list of metrics to collect"
   echo "    -r, --reporter <reporter>  use specified reporter (default: stdout)"
   echo "    -i, --interval <seconds>   collect metrics every n seconds (default: 2)"
@@ -35,6 +37,11 @@ opt_verbose=false
 
 while [ $# -gt 0 ]; do
   case $1 in
+    -c|--config)
+      shift
+      CONFIG_FILE=$1
+      ;;
+
     -m|--metrics)
       shift
       METRICS=$1
@@ -88,6 +95,29 @@ verbose "Available reporters: $__AVAILABLE_REPORTERS"
 if [ $opt_docs = true ]; then
   main_docs
   exit
+fi
+
+if [ -n "$CONFIG_FILE" ]; then
+  verbose "Loading configuration file: $CONFIG_FILE"
+
+  parse_config $CONFIG_FILE
+  if [ $? -ne 0 ]; then
+    exit 1
+  fi
+
+  if is_function global_config; then
+    global_config
+  fi
+
+  configured_reporters=$(get_configured_reporters)
+  if [ -n "$configured_reporters" ]; then
+    REPORTER=$configured_reporters
+  fi
+
+  configured_metrics=$(get_configured_metrics)
+  if [ -n "$configured_metrics" ]; then
+    METRICS=$configured_metrics
+  fi
 fi
 
 main_init $METRICS $REPORTER
