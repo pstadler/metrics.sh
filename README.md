@@ -7,7 +7,7 @@ metrics.sh is a lightweight metrics collection and fowarding utility implemented
 ```
 $ ./metrics.sh --help
 
-  Usage: ./metrics.sh [-d] [-h] [-v] [-m metrics] [-r reporter] [-i interval]
+  Usage: ./metrics.sh [-d] [-h] [-v] [-c] [-m] [-r] [-i]
 
   Options:
 
@@ -54,8 +54,7 @@ TODO: how to write custom reporters
 ## TODO
 
 - README
-- config file support
+- config file docs
 - config file auto-generation
 - load custom/contrib metrics and reporters
-- same metric multiple times? (e.g. disk_usage for multiple devices)
 - allow multiple reporters?

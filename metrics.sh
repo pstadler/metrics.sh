@@ -12,7 +12,7 @@ LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
 
 usage () {
-  echo "  Usage: $0 [-d] [-h] [-v] [-m metrics] [-r reporter] [-i interval]"
+  echo "  Usage: $0 [-d] [-h] [-v] [-c] [-m] [-r] [-i]"
 }
 
 help () {
@@ -82,10 +82,11 @@ done
 # run
 . ./lib/main.sh
 
-if [ $opt_verbose = "true" ]; then
+if [ $opt_verbose = true ]; then
   verbose_on
   verbose "Started in verbose mode"
 fi
+verbose "PID: $$"
 verbose "OS detected: $OS_TYPE"
 
 main_load
@@ -105,8 +106,8 @@ if [ -n "$CONFIG_FILE" ]; then
     exit 1
   fi
 
-  if is_function global_config; then
-    global_config
+  if is_function main_config; then
+    main_config
   fi
 
   configured_reporters=$(get_configured_reporters)

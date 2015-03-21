@@ -24,7 +24,6 @@ parse_config () {
 
   local _group
   local _name
-  local _alias
   local _body
 
   end_section () {
@@ -34,20 +33,16 @@ parse_config () {
 
     local fn_name
     if [ "$_group" = "reporter" ]; then
-      __CFG_REPORTERS=$(trim "${__CFG_REPORTERS} ${_name}:${_alias}")
+      __CFG_REPORTERS=$(trim "${__CFG_REPORTERS} ${_name}")
       fn_name="__r_"
     elif [ "$_group" = "metric" ]; then
-      __CFG_METRICS=$(trim "${__CFG_METRICS} ${_name}:${_alias}")
+      __CFG_METRICS=$(trim "${__CFG_METRICS} ${_name}")
       fn_name="__m_"
     else
-      fn_name="global"
+      fn_name="main"
     fi
 
-    if [ -n "$_alias" ]; then
-      fn_name="${fn_name}${_alias}"
-    elif [ -n "$_name" ]; then
-      fn_name="${fn_name}${_name}"
-    fi
+    fn_name=${fn_name}$(get_alias $_name)
 
     if [ -z "$_body" ]; then
       return
@@ -68,7 +63,7 @@ parse_config () {
     local _section=$(echo $line | grep '^\[.*' | sed 's/\[\(.*\)\]/\1/')
     if [ -n "$_section" ]; then
       end_section
-      unset _group _name _alias _body
+      unset _group _name _body
 
       _group=$(echo $_section | awk '{ print $1 }')
 
@@ -78,13 +73,11 @@ parse_config () {
       fi
 
       if [ "$_group" = "metrics.sh" ]; then
-        _group="global"
+        _group="main"
         continue
       fi
 
-      _section=$(echo $_section | awk '{ print $2 }')
-      _name=$(echo $_section | awk 'BEGIN { FS=":" } { print $1 }')
-      _alias=$(echo $_section | awk 'BEGIN { FS=":" } { print $2 }')
+      _name=$(echo $_section | awk '{ print $2 }')
       continue
     fi
 

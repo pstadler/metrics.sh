@@ -28,9 +28,6 @@ main_load () {
     # register metric
     __AVAILABLE_METRICS=$(trim "$__AVAILABLE_METRICS $metric")
   done
-
-  load_metric_with_prefix __m_${metric}_ $file
-
 }
 
 main_init () {
@@ -40,12 +37,6 @@ main_init () {
 
   # create temp dir
   TEMP_DIR=$(make_temp_dir)
-
-  # register trap
-  trap '
-    main_terminate
-    trap - TERM && kill -- -$$ INT TERM EXIT
-  ' INT TERM EXIT
 
   # check if reporter exists
   if ! in_array $__REPORTER "$__AVAILABLE_REPORTERS"; then
@@ -63,78 +54,96 @@ main_init () {
   done
 
   # init reporter
+  if is_function __r_${__REPORTER}_config; then
+    __r_${__REPORTER}_config
+  fi
   if is_function __r_${__REPORTER}_init; then
     __r_${__REPORTER}_init
   fi
-
-  # init metrics
-  for metric in $__METRICS; do
-    local metric_name=$(get_name $metric)
-    local metric_alias=$(get_alias $metric)
-
-    load_metric_with_prefix __m_${metric_alias}_ ./metrics/${metric_name}.sh
-
-    if ! is_function __m_${metric_alias}_init; then
-      continue
-    fi
-
-    __m_${metric_alias}_init
-  done
 }
 
 main_collect () {
-  # used by metrics to return results
-  report () {
-    local _r_label _r_result
-    if [ -z $2 ]; then
-      _r_label=$metric
-      _r_result="$1"
-    else
-      _r_label="$metric.$1"
-      _r_result="$2"
-    fi
-    if is_number $_r_result; then
-      __r_${__REPORTER}_report $_r_label $_r_result
-    fi
-  }
+  # register trap
+  trap '
+    trap "" 13
+    trap - INT TERM EXIT
+    echo Exit signal received.
+    kill -13 -$$
+  ' 13 INT TERM EXIT
 
   # collect metrics
   for metric in $__METRICS; do
-    metric=$(get_alias $metric)
-    if ! is_function __m_${metric}_collect; then
-      continue
-    fi
+    # run in subshell to isolate scope
+    (
+      local metric_name=$(get_name $metric)
+      local metric_alias=$(get_alias $metric)
+      # used by metrics to return results
+      report () {
+        local _r_label _r_result
+        if [ -z $2 ]; then
+          _r_label=$metric_alias
+          _r_result="$1"
+        else
+          _r_label="$metric_alias.$1"
+          _r_result="$2"
+        fi
+        if is_number $_r_result; then
+          __r_${__REPORTER}_report $_r_label $_r_result
+        fi
+      }
 
-    # fork
-    (while true; do
-      __m_${metric}_collect
-      sleep $INTERVAL
-    done) &
+      # init metric
+      if is_function __m_${metric_alias}_config; then
+        __m_${metric_alias}_config
+      fi
+
+      load_metric_with_prefix __m_${metric_alias}_ ./metrics/${metric_name}.sh
+
+      if is_function __m_${metric_alias}_init; then
+        __m_${metric_alias}_init
+      fi
+
+      if ! is_function __m_${metric_alias}_collect; then
+        continue
+      fi
+
+      # collect metrics
+      trap "
+        if is_function __m_${metric_alias}_terminate; then
+          verbose 'Stopping metric ${metric_alias}'
+          __m_${metric_alias}_terminate
+        fi
+        exit 0
+      " 13
+
+      while true; do
+        __m_${metric_alias}_collect
+        sleep $INTERVAL
+      done
+    ) &
   done
 
-  # run forever
-  sleep 2147483647 # `sleep infinity` is not portable
+  # wait until interrupted
+  wait
+  # then wait again for processes to end
+  wait
+
+  main_terminate
 }
 
 main_terminate () {
-  # terminate metrics
-  for metric in $__METRICS; do
-    metric=$(get_alias $metric)
-    if ! is_function __m_${metric}_terminate; then
-      continue
-    fi
-    __m_${metric}_terminate
-  done
-
   # terminate reporter
   if is_function __r_${__REPORTER}_terminate; then
+    verbose "Stopping reporter ${__REPORTER}"
     __r_${__REPORTER}_terminate
   fi
 
+  verbose -n "Cleaning up..."
   # delete temporary directory
   if [ -d $TEMP_DIR ]; then
     rmdir $TEMP_DIR
   fi
+  verbose "done"
 }
 
 main_docs () {

@@ -17,3 +17,10 @@ in_array () {
 trim () {
   echo $1 | sed -e 's/^[[:space:]]*//g' -e 's/[[:space:]]*\$//g'
 }
+
+unique_id () {
+  RESTORE_LC_ALL=$LC_ALL
+  LC_ALL=C
+  echo __u_$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 10)
+  LC_ALL=$RESTORE_LC_ALL
+}

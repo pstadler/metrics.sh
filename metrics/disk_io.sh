@@ -8,7 +8,7 @@ init () {
       DISK_IO_MOUNTPOINT="/dev/vda"
     fi
   fi
-  readonly __disk_io_fifo=$TEMP_DIR/disk_io
+  readonly __disk_io_fifo=$TEMP_DIR/$(unique_id)
   mkfifo $__disk_io_fifo
   __disk_io_bgproc &
 }
