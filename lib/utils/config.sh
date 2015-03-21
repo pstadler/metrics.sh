@@ -83,8 +83,8 @@ parse_config () {
       fi
 
       _section=$(echo $_section | awk '{ print $2 }')
-      _name=$(echo $_section | awk 'BEGIN { FS=":" } { print $1 } ')
-      _alias=$(echo $_section | awk 'BEGIN { FS=":" } { print $2 } ')
+      _name=$(echo $_section | awk 'BEGIN { FS=":" } { print $1 }')
+      _alias=$(echo $_section | awk 'BEGIN { FS=":" } { print $2 }')
       continue
     fi
 
@@ -94,4 +94,16 @@ parse_config () {
   end_section
 
   IFS=$RESTORE_IFS
+}
+
+get_name () {
+  echo $1 | awk 'BEGIN { FS=":" } { print $1 }'
+}
+
+get_alias () {
+  local _alias=$(echo $1 | awk 'BEGIN { FS=":" } { print $2 }')
+  if [ -z "$_alias" ]; then
+    _alias=$(echo $1 | awk 'BEGIN { FS=":" } { print $1 }')
+  fi
+  echo $_alias
 }

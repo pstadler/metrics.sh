@@ -120,7 +120,7 @@ if [ -n "$CONFIG_FILE" ]; then
   fi
 fi
 
-main_init $METRICS $REPORTER
+main_init "$METRICS" "$REPORTER"
 verbose "Using metrics: $__METRICS"
 verbose "Using reporter: $__REPORTER"
 

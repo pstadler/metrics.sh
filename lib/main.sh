@@ -20,16 +20,17 @@ main_load () {
     __AVAILABLE_REPORTERS=$(trim "$__AVAILABLE_REPORTERS $reporter")
   done
 
-  # load metrics
+  # load available metrics
   for file in ./metrics/*.sh; do
     local filename=$(basename $file)
     local metric=${filename%.*}
 
-    load_metric_with_prefix __m_${metric}_ $file
-
     # register metric
     __AVAILABLE_METRICS=$(trim "$__AVAILABLE_METRICS $metric")
   done
+
+  load_metric_with_prefix __m_${metric}_ $file
+
 }
 
 main_init () {
@@ -54,6 +55,7 @@ main_init () {
 
   # check if metrics exist
   for metric in $__METRICS; do
+    metric=$(get_name $metric)
     if ! in_array $metric "$__AVAILABLE_METRICS"; then
       echo "Error: metric '$metric' is not available"
       exit 1
@@ -67,11 +69,16 @@ main_init () {
 
   # init metrics
   for metric in $__METRICS; do
-    if ! is_function __m_${metric}_init; then
+    local metric_name=$(get_name $metric)
+    local metric_alias=$(get_alias $metric)
+
+    load_metric_with_prefix __m_${metric_alias}_ ./metrics/${metric_name}.sh
+
+    if ! is_function __m_${metric_alias}_init; then
       continue
     fi
 
-    __m_${metric}_init
+    __m_${metric_alias}_init
   done
 }
 
@@ -93,14 +100,15 @@ main_collect () {
 
   # collect metrics
   for metric in $__METRICS; do
+    metric=$(get_alias $metric)
     if ! is_function __m_${metric}_collect; then
       continue
     fi
 
     # fork
     (while true; do
-        __m_${metric}_collect
-        sleep $INTERVAL
+      __m_${metric}_collect
+      sleep $INTERVAL
     done) &
   done
 
@@ -111,6 +119,7 @@ main_collect () {
 main_terminate () {
   # terminate metrics
   for metric in $__METRICS; do
+    metric=$(get_alias $metric)
     if ! is_function __m_${metric}_terminate; then
       continue
     fi
@@ -130,7 +139,10 @@ main_terminate () {
 
 main_docs () {
   echo "# Metrics"
+
   for metric in $__AVAILABLE_METRICS; do
+    load_metric_with_prefix __m_${metric}_ ./metrics/${metric}.sh
+
     if ! is_function __m_${metric}_docs; then
       continue
     fi
