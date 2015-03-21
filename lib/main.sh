@@ -54,14 +54,14 @@ main_init () {
 
 main_collect () {
   # check if reporter exists
-  if ! in_array $(resolve_reporter $__REPORTER) "$__AVAILABLE_REPORTERS"; then
+  if ! in_array $(get_name_for_reporter $__REPORTER) "$__AVAILABLE_REPORTERS"; then
     echo "Error: reporter '$__REPORTER' is not available"
     exit 1
   fi
 
   # check if metrics exist
   for metric in $__METRICS; do
-    if ! in_array $(resolve_metric $metric) "$__AVAILABLE_METRICS"; then
+    if ! in_array $(get_name_for_metric $metric) "$__AVAILABLE_METRICS"; then
       echo "Error: metric '$metric' is not available"
       exit 1
     fi
@@ -76,9 +76,9 @@ main_collect () {
   ' 13 INT TERM EXIT
 
   # init reporter
-  local reporter_alias=$(resolve_reporter $__REPORTER)
-  local reporter_file=$(resolve_reporter $__REPORTER)
-  load_reporter_with_prefix __r_${reporter_alias}_ ./reporters/${reporter_file}.sh
+  local reporter_name=$(get_name_for_reporter $__REPORTER)
+  local reporter_alias=$(get_alias $__REPORTER)
+  load_reporter_with_prefix __r_${reporter_alias}_ ./reporters/${reporter_name}.sh
 
   if is_function __r_${reporter_alias}_defaults; then
     __r_${reporter_alias}_defaults
@@ -94,12 +94,11 @@ main_collect () {
   for metric in $__METRICS; do
     # run in subshell to isolate scope
     (
-      local metric_name=$(get_name $metric)
+      local metric_name=$(get_name_for_metric $metric)
       local metric_alias=$(get_alias $metric)
-      local metric_file=$(resolve_metric $metric)
 
       # init metric
-      load_metric_with_prefix __m_${metric_alias}_ ./metrics/${metric_file}.sh
+      load_metric_with_prefix __m_${metric_alias}_ ./metrics/${metric_name}.sh
 
       if is_function __m_${metric_alias}_defaults; then
         __m_${metric_alias}_defaults

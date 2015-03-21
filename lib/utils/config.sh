@@ -94,10 +94,6 @@ parse_config () {
   IFS=$RESTORE_IFS
 }
 
-get_name () {
-  echo $1 | awk 'BEGIN { FS=":" } { print $1 }'
-}
-
 get_alias () {
   local _alias=$(echo $1 | awk 'BEGIN { FS=":" } { print $2 }')
   if [ -z "$_alias" ]; then
@@ -106,7 +102,11 @@ get_alias () {
   echo $_alias
 }
 
-resolve_reporter () {
+get_name () {
+  echo $1 | awk 'BEGIN { FS=":" } { print $1 }'
+}
+
+get_name_for_reporter () {
   local _alias=$(get_alias $1)
   for reporter in $__CFG_REPORTERS; do
     local __alias=$(get_alias $reporter)
@@ -118,7 +118,7 @@ resolve_reporter () {
   echo $_alias
 }
 
-resolve_metric () {
+get_name_for_metric () {
   local _alias=$(get_alias $1)
   for metric in $__CFG_METRICS; do
     local __alias=$(get_alias $metric)
