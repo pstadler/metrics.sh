@@ -105,3 +105,27 @@ get_alias () {
   fi
   echo $_alias
 }
+
+resolve_reporter () {
+  local _alias=$(get_alias $1)
+  for reporter in $__CFG_REPORTERS; do
+    local __alias=$(get_alias $reporter)
+    if [ $_alias = $__alias ]; then
+      echo $(get_name $reporter)
+      return
+    fi
+  done
+  echo $_alias
+}
+
+resolve_metric () {
+  local _alias=$(get_alias $1)
+  for metric in $__CFG_METRICS; do
+    local __alias=$(get_alias $metric)
+    if [ $_alias = $__alias ]; then
+      echo $(get_name $metric)
+      return
+    fi
+  done
+  echo $_alias
+}
