@@ -1,6 +1,6 @@
 #!/bin/sh
 
-init () {
+start () {
   if [ -z $FILE_LOCATION ]; then
     echo "Error: file reporter requires \$FILE_LOCATION to be specified"
     exit 1
@@ -20,5 +20,5 @@ report () {
 
 docs () {
   echo "Write to a file or named pipe."
-  echo "\$FILE_LOCATION="
+  echo "FILE_LOCATION=$FILE_LOCATION"
 }

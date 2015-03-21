@@ -1,18 +1,12 @@
 #!/bin/sh
 
-# config
-INTERVAL=2
-REPORTER=stdout
-METRICS=cpu,disk_io,disk_usage,heartbeat,memory,network_io,swap
-CONFIG_FILE=
-
 # env
 LC_ALL=en_US.UTF-8
 LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
 
 usage () {
-  echo "  Usage: $0 [-d] [-h] [-v] [-c] [-m] [-r] [-i]"
+  echo "  Usage: $0 [-d] [-h] [-v] [-c] [-m] [-r] [-i] [-C]"
 }
 
 help () {
@@ -27,34 +21,40 @@ help () {
   echo "    -i, --interval <seconds>   collect metrics every n seconds (default: 2)"
   echo "    -v, --verbose              enable verbose mode"
   echo "    -d, --docs                 show documentation"
+  echo "    -C, --print-config         print output to be used in a config file"
   echo "    -h, --help                 show this text"
   echo
 }
 
 # handle opts
+opt_config_file=
+opt_metrics=
+opt_reporter=
+opt_interval=
 opt_docs=false
 opt_verbose=false
+opt_print_config=false
 
 while [ $# -gt 0 ]; do
   case $1 in
     -c|--config)
       shift
-      CONFIG_FILE=$1
+      opt_config_file=$1
       ;;
 
     -m|--metrics)
       shift
-      METRICS=$1
+      opt_metrics=$1
       ;;
 
     -r|--reporter)
       shift
-      REPORTER=$1
+      opt_reporter=$1
       ;;
 
     -i|--interval)
       shift
-      INTERVAL=$1
+      opt_interval=$1
       ;;
 
     -v|-verbose)
@@ -63,6 +63,10 @@ while [ $# -gt 0 ]; do
 
     -d|--docs)
       opt_docs=true
+      ;;
+
+    -C|--print-config)
+      opt_print_config=true
       ;;
 
     -h|--help)
@@ -85,29 +89,30 @@ done
 if [ $opt_verbose = true ]; then
   verbose_on
   verbose "Started in verbose mode"
+  verbose "PID: $$"
+  verbose "OS detected: $OS_TYPE"
 fi
-verbose "PID: $$"
-verbose "OS detected: $OS_TYPE"
 
 main_load
 verbose "Available metrics: $__AVAILABLE_METRICS"
 verbose "Available reporters: $__AVAILABLE_REPORTERS"
 
 if [ $opt_docs = true ]; then
-  main_docs
+  main_print_docs
   exit
 fi
 
-if [ -n "$CONFIG_FILE" ]; then
-  verbose "Loading configuration file: $CONFIG_FILE"
+if [ $opt_print_config = true ]; then
+  main_print_config
+  exit
+fi
 
-  parse_config $CONFIG_FILE
+if [ -n "$opt_config_file" ]; then
+  verbose "Loading configuration file: $opt_config_file"
+
+  parse_config $opt_config_file
   if [ $? -ne 0 ]; then
     exit 1
-  fi
-
-  if is_function main_config; then
-    main_config
   fi
 
   configured_reporters=$(get_configured_reporters)
@@ -119,6 +124,21 @@ if [ -n "$CONFIG_FILE" ]; then
   if [ -n "$configured_metrics" ]; then
     METRICS=$configured_metrics
   fi
+fi
+
+# --reporter always wins
+if [ -n "$opt_reporter" ]; then
+  REPORTER=$opt_reporter
+fi
+
+# --metrics always wins
+if [ -n "$opt_metrics" ]; then
+  METRICS=$opt_metrics
+fi
+
+# --interval always wins
+if [ -n "$opt_interval" ]; then
+  INTERVAL=$opt_interval
 fi
 
 main_init "$METRICS" "$REPORTER"

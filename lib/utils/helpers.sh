@@ -9,8 +9,6 @@ iso_date () {
 }
 
 in_array () {
-  local item=$1
-  local arr=$2
   echo " $2 " | grep -q " $1 "
 }
 
@@ -23,4 +21,8 @@ unique_id () {
   LC_ALL=C
   echo __u_$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 10)
   LC_ALL=$RESTORE_LC_ALL
+}
+
+print_prefixed () {
+  printf "$2" | sed -e "s/^/$1/g"
 }

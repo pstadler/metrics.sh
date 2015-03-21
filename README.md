@@ -55,6 +55,6 @@ TODO: how to write custom reporters
 
 - README
 - config file docs
-- config file auto-generation
 - load custom/contrib metrics and reporters
+- enable -m <alias> / -r <alias>
 - allow multiple reporters?

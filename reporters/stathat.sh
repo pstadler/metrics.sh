@@ -1,6 +1,6 @@
 #!/bin/sh
 
-init () {
+start () {
   if [ -z $STATHAT_API_KEY ]; then
     echo "Error: stathat requires \$STATHAT_API_KEY to be specified"
     exit 1
@@ -17,5 +17,5 @@ report () {
 
 docs () {
   echo "Send data to StatHat (https://www.stathat.com)."
-  echo "\$STATHAT_API_KEY=<ez_key>"
+  echo "STATHAT_API_KEY=$STATHAT_API_KEY"
 }

@@ -48,8 +48,13 @@ parse_config () {
       return
     fi
 
-    #echo "${fn_name}_config () { ${_body}; }"
-    eval "${fn_name}_config () { ${_body}; }"
+    if ! eval "$_body" > /dev/null 2>&1; then
+      echo "Error parsing config section: $_name: $_body"
+      exit 1
+    fi
+
+    #echo "${fn_name}_config () { $_body; }"
+    eval "${fn_name}_config () { $_body; }"
   }
 
   for line in $(cat $1); do

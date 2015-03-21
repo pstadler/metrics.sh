@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if is_osx; then
-  init () {
+  start () {
     readonly __memory_os_memsize=$(sysctl -n hw.memsize)
   }
 

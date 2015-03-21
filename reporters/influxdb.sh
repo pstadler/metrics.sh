@@ -1,13 +1,15 @@
 #!/bin/sh
 
-init () {
+defaults () {
+  if [ -z $INFLUXDB_SEND_HOSTNAME ]; then
+    INFLUXDB_SEND_HOSTNAME=true
+  fi
+}
+
+start () {
   if [ -z $INFLUXDB_API_ENDPOINT ]; then
     echo "Error: influxdb requires \$INFLUXDB_API_ENDPOINT to be specified"
     exit 1
-  fi
-
-  if [ -z $INFLUXDB_SEND_HOSTNAME ]; then
-    INFLUXDB_SEND_HOSTNAME=true
   fi
 
   if [ "$INFLUXDB_SEND_HOSTNAME" = true ]; then
@@ -34,6 +36,6 @@ report () {
 
 docs () {
   echo "Send data to InfluxDB."
-  echo "\$INFLUXDB_API_ENDPOINT="
-  echo "\$INFLUXDB_SEND_HOSTNAME=true"
+  echo "INFLUXDB_API_ENDPOINT=$INFLUXDB_API_ENDPOINT"
+  echo "INFLUXDB_SEND_HOSTNAME=$INFLUXDB_SEND_HOSTNAME"
 }

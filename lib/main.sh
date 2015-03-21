@@ -9,7 +9,22 @@ done
 __AVAILABLE_METRICS=
 __AVAILABLE_REPORTERS=
 
+main_defaults () {
+  if [ -z $INTERVAL ]; then
+    INTERVAL=2
+  fi
+  if [ -z $METRICS ]; then
+    METRICS=cpu,disk_io,disk_usage,heartbeat,memory,network_io,swap
+  fi
+  if [ -z $REPORTER ]; then
+    REPORTER=stdout
+  fi
+}
+
 main_load () {
+  # set defaults
+  main_defaults
+
   # load reporter
   for file in ./reporters/*.sh; do
     local filename=$(basename $file)
@@ -54,11 +69,14 @@ main_init () {
   done
 
   # init reporter
+  if is_function __r_${__REPORTER}_defaults; then
+    __r_${__REPORTER}_defaults
+  fi
   if is_function __r_${__REPORTER}_config; then
     __r_${__REPORTER}_config
   fi
-  if is_function __r_${__REPORTER}_init; then
-    __r_${__REPORTER}_init
+  if is_function __r_${__REPORTER}_start; then
+    __r_${__REPORTER}_start
   fi
 }
 
@@ -77,6 +95,35 @@ main_collect () {
     (
       local metric_name=$(get_name $metric)
       local metric_alias=$(get_alias $metric)
+
+      # init metric
+      load_metric_with_prefix __m_${metric_alias}_ ./metrics/${metric_name}.sh
+
+      if is_function __m_${metric_alias}_defaults; then
+        __m_${metric_alias}_defaults
+      fi
+
+      if is_function __m_${metric_alias}_config; then
+        __m_${metric_alias}_config
+      fi
+
+      if is_function __m_${metric_alias}_start; then
+        __m_${metric_alias}_start
+      fi
+
+      if ! is_function __m_${metric_alias}_collect; then
+        continue
+      fi
+
+      # collect metrics
+      trap "
+        verbose \"Stopping metric '${metric_alias}'\"
+        if is_function __m_${metric_alias}_stop; then
+          __m_${metric_alias}_stop
+        fi
+        exit 0
+      " 13
+
       # used by metrics to return results
       report () {
         local _r_label _r_result
@@ -91,30 +138,6 @@ main_collect () {
           __r_${__REPORTER}_report $_r_label $_r_result
         fi
       }
-
-      # init metric
-      if is_function __m_${metric_alias}_config; then
-        __m_${metric_alias}_config
-      fi
-
-      load_metric_with_prefix __m_${metric_alias}_ ./metrics/${metric_name}.sh
-
-      if is_function __m_${metric_alias}_init; then
-        __m_${metric_alias}_init
-      fi
-
-      if ! is_function __m_${metric_alias}_collect; then
-        continue
-      fi
-
-      # collect metrics
-      trap "
-        if is_function __m_${metric_alias}_terminate; then
-          verbose 'Stopping metric ${metric_alias}'
-          __m_${metric_alias}_terminate
-        fi
-        exit 0
-      " 13
 
       while true; do
         __m_${metric_alias}_collect
@@ -132,13 +155,13 @@ main_collect () {
 }
 
 main_terminate () {
-  # terminate reporter
-  if is_function __r_${__REPORTER}_terminate; then
-    verbose "Stopping reporter ${__REPORTER}"
-    __r_${__REPORTER}_terminate
+  # stop reporter
+  verbose "Stopping reporter '${__REPORTER}'"
+  if is_function __r_${__REPORTER}_stop; then
+    __r_${__REPORTER}_stop
   fi
 
-  verbose -n "Cleaning up..."
+  verbose "Cleaning up..."
   # delete temporary directory
   if [ -d $TEMP_DIR ]; then
     rmdir $TEMP_DIR
@@ -146,14 +169,18 @@ main_terminate () {
   verbose "done"
 }
 
-main_docs () {
-  echo "# Metrics"
+main_print_docs () {
+  echo "# METRICS"
 
   for metric in $__AVAILABLE_METRICS; do
     load_metric_with_prefix __m_${metric}_ ./metrics/${metric}.sh
 
     if ! is_function __m_${metric}_docs; then
       continue
+    fi
+
+    if is_function __m_${metric}_defaults; then
+      __m_${metric}_defaults
     fi
 
     echo
@@ -168,8 +195,48 @@ main_docs () {
       continue
     fi
 
+    if is_function __r_${reporter}_defaults; then
+      __r_${reporter}_defaults
+    fi
+
     echo
     echo "[$reporter]"
     __r_${reporter}_docs
+  done
+}
+
+main_print_config () {
+  echo "[metrics.sh]"
+  echo ";INTERVAL=$INTERVAL"
+  echo ";METRICS=$METRICS"
+  echo ";REPORTER=$REPORTER"
+
+  for metric in $__AVAILABLE_METRICS; do
+    load_metric_with_prefix __m_${metric}_ ./metrics/${metric}.sh
+
+    if is_function __m_${metric}_defaults; then
+      __m_${metric}_defaults
+    fi
+
+    echo
+    echo ";[metric $metric]"
+    if ! is_function __m_${metric}_docs; then
+      continue
+    fi
+    print_prefixed ";" "$(__m_${metric}_docs)"
+  done
+
+  for reporter in $__AVAILABLE_REPORTERS; do
+    if ! is_function __r_${reporter}_docs; then
+      continue
+    fi
+
+    if is_function __r_${reporter}_defaults; then
+      __r_${reporter}_defaults
+    fi
+
+    echo
+    echo ";[reporter $reporter]"
+    print_prefixed ";" "$(__r_${reporter}_docs)"
   done
 }

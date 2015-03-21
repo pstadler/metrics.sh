@@ -1,6 +1,6 @@
 #!/bin/sh
 
-init () {
+defaults () {
   if [ -z $DISK_USAGE_MOUNTPOINT ]; then
     if is_osx; then
       DISK_USAGE_MOUNTPOINT="/dev/disk1"
@@ -17,5 +17,5 @@ collect () {
 
 docs () {
   echo "Disk usage percentage for a file system at a given mount point."
-  echo "\$DISK_USAGE_MOUNTPOINT="
+  echo "DISK_USAGE_MOUNTPOINT=$DISK_USAGE_MOUNTPOINT"
 }

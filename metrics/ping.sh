@@ -1,6 +1,6 @@
 #!/bin/sh
 
-init () {
+start () {
   if [ -z $PING_REMOTE_HOST ]; then
     echo "Error: ping metric requires \$PING_REMOTE_HOST to be specified"
     exit 1
@@ -19,5 +19,5 @@ collect () {
 docs () {
   echo "Check if remote host is reachable by sending a single ping."
   echo "Reports '1' if ping was successful, '0' if not."
-  echo "\$PING_REMOTE_HOST="
+  echo "PING_REMOTE_HOST=$PING_REMOTE_HOST"
 }

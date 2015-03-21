@@ -1,6 +1,12 @@
 #!/bin/sh
 
-init() {
+defaults () {
+  if [ -z $KEEN_IO_EVENT_COLLECTION ]; then
+    KEEN_IO_EVENT_COLLECTION=$(hostname)
+  fi
+}
+
+start() {
   if [ -z $KEEN_IO_PROJECT_ID ]; then
     echo "Error: keen_io requires \$KEEN_IO_PROJECT_ID to be specified"
     exit 1
@@ -9,10 +15,6 @@ init() {
   if [ -z $KEEN_IO_WRITE_KEY ]; then
     echo "Error: keen_io requires \$KEEN_IO_WRITE_KEY to be specified"
     exit 1
-  fi
-
-  if [ -z $KEEN_IO_EVENT_COLLECTION ]; then
-    KEEN_IO_EVENT_COLLECTION=$(hostname)
   fi
 
   __keen_io_api_url="https://api.keen.io/3.0"
@@ -31,7 +33,7 @@ report () {
 
 docs () {
   echo "Send data to Keen IO (https://keen.io)."
-  echo "\$KEEN_IO_WRITE_KEY=<write_key>"
-  echo "\$KEEN_IO_PROJECT_ID=<project_id>"
-  echo "\$KEEN_IO_EVENT_COLLECTION=$(hostname)"
+  echo "KEEN_IO_WRITE_KEY=$KEEN_IO_WRITE_KEY"
+  echo "KEEN_IO_PROJECT_ID=$KEEN_IO_PROJECT_ID"
+  echo "KEEN_IO_EVENT_COLLECTION=$KEEN_IO_EVENT_COLLECTION"
 }
