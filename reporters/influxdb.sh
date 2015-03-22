@@ -9,7 +9,7 @@ defaults () {
 start () {
   if [ -z $INFLUXDB_API_ENDPOINT ]; then
     echo "Error: influxdb requires \$INFLUXDB_API_ENDPOINT to be specified"
-    exit 1
+    return 1
   fi
 
   if [ "$INFLUXDB_SEND_HOSTNAME" = true ]; then
@@ -29,9 +29,8 @@ report () {
   else
     points="[$value]"
   fi
-
-  curl -X POST $INFLUXDB_API_ENDPOINT \
-    -d "[{\"name\":\"$metric\",\"columns\":$__influxdb_columns,\"points\":[$points]}]"
+  local data="[{\"name\":\"$metric\",\"columns\":$__influxdb_columns,\"points\":[$points]}]"
+  curl -s -X POST $INFLUXDB_API_ENDPOINT -d $data
 }
 
 docs () {

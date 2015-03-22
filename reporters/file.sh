@@ -3,7 +3,7 @@
 start () {
   if [ -z $FILE_LOCATION ]; then
     echo "Error: file reporter requires \$FILE_LOCATION to be specified"
-    exit 1
+    return 1
   fi
 
   if [ ! -f $FILE_LOCATION ]; then

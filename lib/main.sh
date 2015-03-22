@@ -68,7 +68,7 @@ main_collect () {
   trap '
     trap "" 13
     trap - INT TERM EXIT
-    echo Exit signal received.
+    echo Exit signal received, stopping...
     kill -13 -$$
   ' 13 INT TERM EXIT
 
@@ -88,6 +88,10 @@ main_collect () {
   verbose "Starting reporter '${reporter_alias}'"
   if is_function __r_${reporter_alias}_start; then
     __r_${reporter_alias}_start
+    if [ $? -ne 0 ]; then
+      echo "Error: failed to start reporter '${reporter_alias}'"
+      exit 1
+    fi
   fi
 
   # collect metrics
@@ -111,6 +115,10 @@ main_collect () {
       verbose "Starting metric '${metric_alias}'"
       if is_function __m_${metric_alias}_start; then
         __m_${metric_alias}_start
+        if [ $? -ne 0 ]; then
+          echo "Warning: metric '${metric_alias}' is disabled after failing to start"
+          continue
+        fi
       fi
 
       if ! is_function __m_${metric_alias}_collect; then

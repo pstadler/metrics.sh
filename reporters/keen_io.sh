@@ -9,12 +9,12 @@ defaults () {
 start() {
   if [ -z $KEEN_IO_PROJECT_ID ]; then
     echo "Error: keen_io requires \$KEEN_IO_PROJECT_ID to be specified"
-    exit 1
+    return 1
   fi
 
   if [ -z $KEEN_IO_WRITE_KEY ]; then
     echo "Error: keen_io requires \$KEEN_IO_WRITE_KEY to be specified"
-    exit 1
+    return 1
   fi
 
   __keen_io_api_url="https://api.keen.io/3.0"
@@ -28,7 +28,7 @@ report () {
   local value=$2
 
   curl -s $__keen_io_api_url -H "Content-Type: application/json" \
-                  -d "{\"metric\":\"$metric\",\"value\":$value}" > /dev/null
+       -d "{\"metric\":\"$metric\",\"value\":$value}"
 }
 
 docs () {

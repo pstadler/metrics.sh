@@ -11,33 +11,33 @@ defaults () {
 }
 
 start () {
-  readonly __disk_io_fifo=$TEMP_DIR/$(unique_id)
-  mkfifo $__disk_io_fifo
+  readonly fifo=$TEMP_DIR/$(unique_id)
+  mkfifo $fifo
 
   if is_osx; then
-    __disk_io_bgproc () {
+    bg_proc () {
       iostat -K -d -w $INTERVAL $DISK_IO_MOUNTPOINT | while read line; do
-        echo $line | awk '{ print $3 }' > $__disk_io_fifo
+        echo $line | awk '{ print $3 }' > $fifo
       done
     }
   else
-    __disk_io_bgproc () {
+    bg_proc () {
       iostat -y -m -d $INTERVAL $DISK_IO_MOUNTPOINT | while read line; do
-        echo $line | awk '/[0-9.]/{ print $3 }' > $__disk_io_fifo
+        echo $line | awk '/[0-9.]/{ print $3 }' > $fifo
       done
     }
   fi
 
-  __disk_io_bgproc &
+  bg_proc &
 }
 
 collect () {
-  report $(cat $__disk_io_fifo)
+  report $(cat $fifo)
 }
 
 stop () {
-  if [ ! -z $__disk_io_fifo ] && [ -p $__disk_io_fifo ]; then
-    rm $__disk_io_fifo
+  if [ ! -z $fifo ] && [ -p $fifo ]; then
+    rm $fifo
   fi
 }
 

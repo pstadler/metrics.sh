@@ -11,35 +11,35 @@ defaults () {
 }
 
 start () {
-  readonly __network_io_divisor=$(($INTERVAL * 1024))
+  readonly divisor=$(($INTERVAL * 1024))
 
   if is_osx; then
-    get_netstat () {
+    get_sample () {
       netstat -b -I $NETWORK_IO_INTERFACE | awk '{ print $7" "$10 }' | tail -n 1
     }
   else
-    get_netstat () {
+    get_sample () {
       cat /proc/net/dev | awk -v iface_regex="$NETWORK_IO_INTERFACE:" \
                                       '$0 ~ iface_regex { print $2" "$10 }'
     }
   fi
 
   calc_kBps() {
-    echo $1 $2 | awk -v divisor=$__network_io_divisor \
+    echo $1 $2 | awk -v divisor=$divisor \
                 '{ printf "%.2f", ($1 - $2) / divisor }'
   }
 }
 
 collect () {
   local sample
-  sample=$(get_netstat)
-  if [ ! -z "$__network_io_sample" ]; then
+  sample=$(get_sample)
+  if [ ! -z "$previous_sample" ]; then
     report "in" $(calc_kBps $(echo $sample | awk '{print $1}') \
-                                $(echo $__network_io_sample | awk '{print $1}'))
+                                $(echo $previous_sample | awk '{print $1}'))
     report "out" $(calc_kBps $(echo $sample | awk '{print $2}') \
-                                $(echo $__network_io_sample | awk '{print $2}'))
+                                $(echo $previous_sample | awk '{print $2}'))
   fi
-  __network_io_sample="$sample"
+  previous_sample="$sample"
 }
 
 docs () {

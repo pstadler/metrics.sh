@@ -2,8 +2,8 @@
 
 start () {
   if [ -z $PING_REMOTE_HOST ]; then
-    echo "Error: ping metric requires \$PING_REMOTE_HOST to be specified"
-    exit 1
+    echo "Warning: ping requires \$PING_REMOTE_HOST to be specified"
+    return 1
   fi
 }
 

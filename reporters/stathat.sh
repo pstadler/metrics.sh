@@ -3,7 +3,7 @@
 start () {
   if [ -z $STATHAT_API_KEY ]; then
     echo "Error: stathat requires \$STATHAT_API_KEY to be specified"
-    exit 1
+    return 1
   fi
 }
 
@@ -11,8 +11,8 @@ report () {
   local metric=$1
   local value=$2
 
-  curl -s -d "ezkey=$STATHAT_API_KEY&stat=$metric&value=$value" \
-                                      http://api.stathat.com/ez > /dev/null
+  curl -s http://api.stathat.com/ez \
+       -d "ezkey=$STATHAT_API_KEY&stat=$metric&value=$value"
 }
 
 docs () {

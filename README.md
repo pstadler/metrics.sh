@@ -124,6 +124,131 @@ network_eth1.out: 0.03
 ...
 ```
 
-## Writing custom metrics / reporters
+## Writing custom metrics and reporters
 
-TODO
+metrics.sh provides a simple interface based on hooks for writing custom metrics and reporters. Each hook is optional and only needs to be implemented if necessary. In order for metrics.sh to find and load custom metrics, they have to be placed in `./metrics/custom` or wherever `CUSTOM_METRICS_PATH` is pointing to. The same applies to custom reporters, whose default location is `./reporters/custom` or any folder specified by `CUSTOM_REPORTERS_PATH`.
+
+### Custom metrics
+
+```sh
+# Hooks for metrics in order of execution
+defaults () {}  # setting default variables
+start () {}     # called at the beginning
+collect () {}   # collect the actual metric
+stop () {}      # called before exiting
+docs () {}      # used for priting docs and creating output for configuration
+```
+
+Metrics run within an isolated scope. It's generally safe to create variables and helper functions within metrics.
+
+Below is an example script for monitoring the size of a specified folder. Assuming this script is located at `./metrics/custom/dir_size.sh`, it can be invoked by calling `./metrics.sh -m dir_size`.
+
+```sh
+#!/bin/sh
+
+# Set default values. This function should never fail.
+defaults () {
+  if [ -z $DIR_SIZE_PATH ]; then
+    DIR_SIZE_PATH="."
+  fi
+  if [ -z $DIR_SIZE_IN_MB ]; then
+    DIR_SIZE_IN_MB=false
+  fi
+}
+
+# Prepare the collector. Create helper functions to be used during collection
+# if needed. Returning 1 will disable this metric and report a warning.
+start () {
+  if [ $DIR_SIZE_IN_MB = false ]; then
+    DU_ARGS="-s -m $DIR_SIZE_PATH"
+  else
+    DU_ARGS="-s -k $DIR_SIZE_PATH"
+  fi
+}
+
+# Collect actual metric. This function is called every N seconds.
+collect () {
+  # Calling `report $val` will check if the value is a number (int or float)
+  # and then send it over to the reporter's report() function, together with
+  # the name of the metric, in this case "dir_size" if no alias is used.
+  report $(du $DU_ARGS | awk '{ print $1 }')
+  # If report is called with two arguments, the first one will be appended
+  # to the metric name, for example `report "foo" $val` would be reported as
+  # "dir_size.foo: $val". This is helpful when a metric is collecting multiple 
+  # values like `network_io`, which reports "network_io.in" / "network_io.out".
+}
+
+# Stop is not needed for this metric, there's nothing to clean up.
+# stop () {}
+
+# The output of this function is shown when calling `metrics.sh`
+# with `--docs` and is even more helpful when creating configuration
+# files with `--print-config`.
+docs () {
+  echo "Monitor size of a specific folder in Kb or Mb."
+  echo "DIR_SIZE_PATH=$DIR_SIZE_PATH"
+  echo "DIR_SIZE_REPORT_MB=$DIR_SIZE_IN_MB"
+}
+```
+
+### Custom reporters
+
+```sh
+# Hooks for reporters in order of execution
+defaults () {}  # setting default variables
+start () {}     # called at the beginning
+report () {}    # report the actual metric
+stop () {}      # called before exiting
+docs () {}      # used for priting docs and creating output for configuration
+```
+
+Below is an example script for sending metrics as JSON data to an API endpoint. Assuming this script is located at `./reporters/custom/json_api.sh`, it can be invoked by calling `./metrics.sh -r json_api`.
+
+```sh
+#!/bin/sh
+
+# Set default values. This function should never fail.
+defaults () {
+  if [ -z $JSON_API_METHOD ]; then
+    JSON_API_METHOD="POST"
+  fi
+}
+
+# Prepare the reporter. Create helper functions to be used during collection
+# if needed. Returning 1 will result in an error and exection will be stopped.
+start () {
+  if [ -z $JSON_API_ENDPOINT ]; then
+    echo "Error: json_api requires \$JSON_API_ENDPOINT to be specified"
+    return 1
+  fi
+}
+
+# Report metric. This function is called whenever there's a new value
+# to report. It's important to know that metrics don't call this function
+# directly, as there's some more work to be done before. You can safely assume 
+# that arguments passed to this function are sanitized and valid.
+report () {
+  local metric=$1 # the name of the metric, e.g. "cpu", "cpu_alias", "cpu.foo"
+  local value=$2  # int or float
+  curl -s -H "Content-Type: application/json" $JSON_API_ENDPOINT \
+       -X $JSON_API_METHOD -d "{\"metric\":\"$metric\",\"value\":$value}"
+}
+
+# Stop is not needed here, there's nothing to clean up.
+# stop () {}
+
+# The output of this function is shown when calling `metrics.sh`
+# with `--docs` and is even more helpful when creating configuration
+# files with `--print-config`.
+docs () {
+  echo "Send data as JSON to an API endpoint."
+  echo "JSON_API_ENDPOINT=$JSON_API_ENDPOINT"
+  echo "JSON_API_METHOD=$JSON_API_METHOD"
+}
+```
+
+## Roadmap
+
+- Test and improve init.d script and write docs for it
+- Implement StatsD reporter
+- Tests
