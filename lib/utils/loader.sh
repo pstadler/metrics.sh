@@ -2,7 +2,7 @@
 
 get_available_reporters () {
   local result
-  for file in `ls ./reporters/*.sh $CUSTOM_REPORTERS_PATH/*.sh 2>/dev/null`; do
+  for file in `ls ./reporters/*.sh $CUSTOM_REPORTERS_PATH/*.sh 2> /dev/null`; do
     local filename=$(basename $file)
     local reporter=${filename%.*}
     result=$(echo "$result $reporter")
@@ -12,7 +12,7 @@ get_available_reporters () {
 
 get_available_metrics () {
   local result
-  for file in `ls ./metrics/*.sh $CUSTOM_METRICS_PATH/*.sh  2>/dev/null`; do
+  for file in `ls ./metrics/*.sh $CUSTOM_METRICS_PATH/*.sh 2> /dev/null`; do
     local filename=$(basename $file)
     local metric=${filename%.*}
     # register metric

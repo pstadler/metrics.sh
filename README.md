@@ -28,7 +28,7 @@ $ git clone git@github.com:pstadler/metrics.sh.git
 
 ### Requirements
 
-metrics.sh has been tested on Ubuntu 14.04 and Mac OS X but is supposed to run on most *NIX-like operating systems. Some of the provided metrics require [procfs](http://en.wikipedia.org/wiki/Procfs) to be available when running on *NIX. POSIX compliancy means that metrics.sh works with minimalistic command interpreters such as [dash](http://manpages.ubuntu.com/manpages/trusty/en/man1/dash.1.html). Built-in metrics do **not** require root privileges.
+metrics.sh has been tested on Ubuntu 14.04 and Mac OS X but is supposed to run on most Unix-like operating systems. Some of the provided metrics require [procfs](http://en.wikipedia.org/wiki/Procfs) to be available when running on *nix. POSIX compliancy means that metrics.sh works with minimalistic command interpreters such as [dash](http://manpages.ubuntu.com/manpages/trusty/en/man1/dash.1.html). Built-in metrics do **not** require root privileges.
 
 ## Metrics
 
@@ -121,10 +121,6 @@ network_eth1.in: 0.08
 network_eth1.out: 0.03
 ...
 ```
-
-### Daemonize / init.d / upstart
-
-TODO
 
 ## Writing custom metrics / reporters
 
