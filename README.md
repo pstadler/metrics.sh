@@ -1,6 +1,6 @@
 # metrics.sh
 
-metrics.sh is a lightweight metrics collection and fowarding utility implemented in portable POSIX compliant shell scripts. A transparent interface based on hooks enables writing custom collectors and reporters in an elegant way.
+metrics.sh is a lightweight metrics collection and fowarding daemon implemented in portable POSIX compliant shell scripts. A transparent interface based on hooks enables writing custom collectors and reporters in an elegant way.
 
 ## Usage
 
