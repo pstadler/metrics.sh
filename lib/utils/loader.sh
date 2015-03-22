@@ -1,10 +1,43 @@
 #!/bin/sh
 
+get_available_reporters () {
+  local result
+  for file in `ls ./reporters/*.sh $CUSTOM_REPORTERS_PATH/*.sh 2>/dev/null`; do
+    local filename=$(basename $file)
+    local reporter=${filename%.*}
+    result=$(echo "$result $reporter")
+  done
+  echo $result
+}
+
+get_available_metrics () {
+  local result
+  for file in `ls ./metrics/*.sh $CUSTOM_METRICS_PATH/*.sh  2>/dev/null`; do
+    local filename=$(basename $file)
+    local metric=${filename%.*}
+    # register metric
+    result=$(trim "$result $metric")
+  done
+  echo $result
+}
+
 load_reporter_with_prefix () {
   local prefix=$1
-  local file=$2
-  local content
+  local name=$2
 
+  local file
+  for dir in $CUSTOM_REPORTERS_PATH ./reporters; do
+    if [ -f $dir/$name.sh ]; then
+      file=$dir/$name.sh
+      break
+    fi
+  done
+
+  if [ -z $file ]; then
+    return 1
+  fi
+
+  local content
   content=$(sed \
           -e 's/^[[:space:]]*\(defaults[ ]*()[ ]*{\)/'"$prefix"'\1/' \
           -e 's/^[[:space:]]*\(start[ ]*()[ ]*{\)/'"$prefix"'\1/' \
@@ -17,10 +50,21 @@ load_reporter_with_prefix () {
 
 load_metric_with_prefix () {
   local prefix=$1
-  local file=$2
-  local content
+  local name=$2
 
-  # dash will error if this variable is defined as `local`
+  local file
+  for dir in $CUSTOM_METRICS_PATH ./metrics; do
+    if [ -f $dir/$name.sh ]; then
+      file=$dir/$name.sh
+      break
+    fi
+  done
+
+  if [ -z $file ]; then
+    return 1
+  fi
+
+  local content
   content=$(sed \
           -e 's/^[[:space:]]*\(defaults[ ]*()[ ]*{\)/'"$prefix"'\1/' \
           -e 's/^[[:space:]]*\(start[ ]*()[ ]*{\)/'"$prefix"'\1/' \

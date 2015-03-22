@@ -5,19 +5,21 @@ for util in ./lib/utils/*.sh; do
   . $util
 done
 
-# init
-__AVAILABLE_METRICS=
-__AVAILABLE_REPORTERS=
-
 main_defaults () {
   if [ -z $INTERVAL ]; then
     INTERVAL=2
   fi
-  if [ -z $METRICS ]; then
-    METRICS=cpu,disk_io,disk_usage,heartbeat,memory,network_io,swap
+  if [ -z $DEFAULT_METRICS ]; then
+    DEFAULT_METRICS=cpu,memory,swap,network_io,disk_io,disk_usage
   fi
-  if [ -z $REPORTER ]; then
-    REPORTER=stdout
+  if [ -z $DEFAULT_REPORTER ]; then
+    DEFAULT_REPORTER=stdout
+  fi
+  if [ -z $CUSTOM_REPORTERS_PATH ]; then
+    CUSTOM_REPORTERS_PATH=./reporters/custom
+  fi
+  if [ -z $CUSTOM_METRICS_PATH ]; then
+    CUSTOM_METRICS_PATH=./metrics/custom
   fi
 }
 
@@ -25,28 +27,23 @@ main_load () {
   # set defaults
   main_defaults
 
-  # load reporter
-  for file in ./reporters/*.sh; do
-    local filename=$(basename $file)
-    local reporter=${filename%.*}
-
-    __AVAILABLE_REPORTERS=$(trim "$__AVAILABLE_REPORTERS $reporter")
-  done
-
-  # load available metrics
-  for file in ./metrics/*.sh; do
-    local filename=$(basename $file)
-    local metric=${filename%.*}
-
-    # register metric
-    __AVAILABLE_METRICS=$(trim "$__AVAILABLE_METRICS $metric")
-  done
+  __AVAILABLE_REPORTERS=$(get_available_reporters)
+  __AVAILABLE_METRICS=$(get_available_metrics)
 }
 
 main_init () {
-  # handle args
-  __METRICS=$(echo $1 | sed 's/,/ /g')
-  __REPORTER=$2
+  local metrics="$1"
+  local reporter="$2"
+
+  if [ -z "$metrics" ]; then
+    metrics=$DEFAULT_METRICS
+  fi
+  if [ -z "$reporter" ]; then
+    reporter=$DEFAULT_REPORTER
+  fi
+
+  __METRICS=$(echo $metrics| sed 's/,/ /g')
+  __REPORTER=$reporter
 
   # create temp dir
   TEMP_DIR=$(make_temp_dir)
@@ -78,14 +75,17 @@ main_collect () {
   # init reporter
   local reporter_name=$(get_name_for_reporter $__REPORTER)
   local reporter_alias=$(get_alias $__REPORTER)
-  load_reporter_with_prefix __r_${reporter_alias}_ ./reporters/${reporter_name}.sh
+  load_reporter_with_prefix __r_${reporter_alias}_ ${reporter_name}
 
   if is_function __r_${reporter_alias}_defaults; then
     __r_${reporter_alias}_defaults
   fi
+
   if is_function __r_${reporter_alias}_config; then
     __r_${reporter_alias}_config
   fi
+
+  verbose "Starting reporter '${reporter_alias}'"
   if is_function __r_${reporter_alias}_start; then
     __r_${reporter_alias}_start
   fi
@@ -98,7 +98,7 @@ main_collect () {
       local metric_alias=$(get_alias $metric)
 
       # init metric
-      load_metric_with_prefix __m_${metric_alias}_ ./metrics/${metric_name}.sh
+      load_metric_with_prefix __m_${metric_alias}_ ${metric_name}
 
       if is_function __m_${metric_alias}_defaults; then
         __m_${metric_alias}_defaults
@@ -108,11 +108,13 @@ main_collect () {
         __m_${metric_alias}_config
       fi
 
+      verbose "Starting metric '${metric_alias}'"
       if is_function __m_${metric_alias}_start; then
         __m_${metric_alias}_start
       fi
 
       if ! is_function __m_${metric_alias}_collect; then
+        verbose "No collect() function found for '${metric_alias}'"
         continue
       fi
 
@@ -172,10 +174,19 @@ main_terminate () {
 }
 
 main_print_docs () {
+  echo "# GLOBAL"
+  echo
+  echo "INTERVAL=$INTERVAL"
+  echo "DEFAULT_REPORTER=$DEFAULT_REPORTER"
+  echo "DEFAULT_METRICS=$DEFAULT_METRICS"
+  echo "CUSTOM_REPORTERS_PATH=$CUSTOM_REPORTERS_PATH"
+  echo "CUSTOM_METRICS_PATH=$CUSTOM_METRICS_PATH"
+
+  echo
   echo "# METRICS"
 
   for metric in $__AVAILABLE_METRICS; do
-    load_metric_with_prefix __m_${metric}_ ./metrics/${metric}.sh
+    load_metric_with_prefix __m_${metric}_ ${metric}
 
     if ! is_function __m_${metric}_docs; then
       continue
@@ -193,7 +204,7 @@ main_print_docs () {
   echo
   echo "# REPORTERS"
   for reporter in $__AVAILABLE_REPORTERS; do
-    load_reporter_with_prefix __r_${reporter}_ ./reporters/${reporter}.sh
+    load_reporter_with_prefix __r_${reporter}_ ${reporter}
 
     if ! is_function __r_${reporter}_docs; then
       continue
@@ -212,11 +223,13 @@ main_print_docs () {
 main_print_config () {
   echo "[metrics.sh]"
   echo ";INTERVAL=$INTERVAL"
-  echo ";METRICS=$METRICS"
-  echo ";REPORTER=$REPORTER"
+  echo ";DEFAULT_REPORTER=$DEFAULT_REPORTER"
+  echo ";DEFAULT_METRICS=$DEFAULT_METRICS"
+  echo ";CUSTOM_REPORTERS_PATH=$CUSTOM_REPORTERS_PATH"
+  echo ";CUSTOM_METRICS_PATH=$CUSTOM_METRICS_PATH"
 
   for metric in $__AVAILABLE_METRICS; do
-    load_metric_with_prefix __m_${metric}_ ./metrics/${metric}.sh
+    load_metric_with_prefix __m_${metric}_ ${metric}
 
     if is_function __m_${metric}_defaults; then
       __m_${metric}_defaults
@@ -231,11 +244,7 @@ main_print_config () {
   done
 
   for reporter in $__AVAILABLE_REPORTERS; do
-    load_reporter_with_prefix __r_${reporter}_ ./reporters/${reporter}.sh
-
-    if ! is_function __r_${reporter}_docs; then
-      continue
-    fi
+    load_reporter_with_prefix __r_${reporter}_ ${reporter}
 
     if is_function __r_${reporter}_defaults; then
       __r_${reporter}_defaults
@@ -243,6 +252,8 @@ main_print_config () {
 
     echo
     echo ";[reporter $reporter]"
-    print_prefixed ";" "$(__r_${reporter}_docs)"
+    if is_function __r_${reporter}_docs; then
+      print_prefixed ";" "$(__r_${reporter}_docs)"
+    fi
   done
 }

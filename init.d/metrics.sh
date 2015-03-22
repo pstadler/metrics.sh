@@ -11,7 +11,8 @@
 
 SCRIPT=<SCRIPT>
 RUNAS=<USER>
-ARGS=<ARGS>
+CONFIG_FILE=<CONFIG_FILE>
+ARGS="-c $CONFIG_FILE"
 NAME=metrics.sh
 
 PIDFILE=/var/run/$NAME.pid
@@ -25,7 +26,7 @@ start() {
     echo 'Service already running' >&2
     return 1
   fi
-  echo 'Starting service…' >&2
+  echo 'Starting service...' >&2
   local CMD="$SCRIPT &> \"$LOGFILE\" & echo \$!"
   su -c "$CMD $ARGS" $RUNAS > "$PIDFILE"
   echo 'Service started' >&2
@@ -36,7 +37,7 @@ stop() {
     echo 'Service not running' >&2
     return 1
   fi
-  echo 'Stopping service…' >&2
+  echo 'Stopping service...' >&2
   kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
   echo 'Service stopped' >&2
 }
