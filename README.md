@@ -6,8 +6,8 @@ metrics.sh is a lightweight metrics collection and fowarding utility implemented
 
 ```
 $ ./metrics.sh --help
-
-  Usage: ./metrics.sh [-d] [-h] [-v] [-c] [-m] [-r] [-i]
+  
+  Usage: ./metrics.sh [-d] [-h] [-v] [-c] [-m] [-r] [-i] [-C] [-u]
 
   Options:
 
@@ -16,6 +16,8 @@ $ ./metrics.sh --help
     -r, --reporter <reporter>  use specified reporter (default: stdout)
     -i, --interval <seconds>   collect metrics every n seconds (default: 2)
     -v, --verbose              enable verbose mode
+    -C, --print-config         print output to be used in a config file
+    -u, --update               pull the latest version (requires git)
     -d, --docs                 show documentation
     -h, --help                 show this text
 ```
@@ -28,7 +30,7 @@ $ git clone git@github.com:pstadler/metrics.sh.git
 
 ### Requirements
 
-metrics.sh has been tested on Ubuntu 14.04 and Mac OS X but is supposed to run on most Unix-like operating systems. Some of the provided metrics require [procfs](http://en.wikipedia.org/wiki/Procfs) to be available when running on *nix. POSIX compliancy means that metrics.sh works with minimalistic command interpreters such as [dash](http://manpages.ubuntu.com/manpages/trusty/en/man1/dash.1.html). Built-in metrics do **not** require root privileges.
+metrics.sh has been tested on Ubuntu 14.04 and Mac OS X but is supposed to run on most Unix-like operating systems. Some of the provided metrics require [procfs](http://en.wikipedia.org/wiki/Procfs) to be available when running on *nix. POSIX compliancy means that metrics.sh works with minimalistic command interpreters such as [dash](http://manpages.ubuntu.com/manpages/trusty/en/man1/dash.1.html). Built-in metrics do __not__ require root privileges.
 
 ## Metrics
 

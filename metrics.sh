@@ -6,7 +6,7 @@ LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
 
 usage () {
-  echo "  Usage: $0 [-d] [-h] [-v] [-c] [-m] [-r] [-i] [-C]"
+  echo "  Usage: $0 [-d] [-h] [-v] [-c] [-m] [-r] [-i] [-C] [-u]"
 }
 
 help () {
@@ -20,8 +20,9 @@ help () {
   echo "    -r, --reporter <reporter>  use specified reporter (default: stdout)"
   echo "    -i, --interval <seconds>   collect metrics every n seconds (default: 2)"
   echo "    -v, --verbose              enable verbose mode"
-  echo "    -d, --docs                 show documentation"
   echo "    -C, --print-config         print output to be used in a config file"
+  echo "    -u, --update               pull the latest version (requires git)"
+  echo "    -d, --docs                 show documentation"
   echo "    -h, --help                 show this text"
   echo
 }
@@ -31,9 +32,10 @@ opt_config_file=
 opt_metrics=
 opt_reporter=
 opt_interval=
-opt_docs=false
 opt_verbose=false
 opt_print_config=false
+opt_do_update=false
+opt_docs=false
 
 while [ $# -gt 0 ]; do
   case $1 in
@@ -57,16 +59,20 @@ while [ $# -gt 0 ]; do
       opt_interval=$1
       ;;
 
-    -v|-verbose)
+    -v|--verbose)
       opt_verbose=true
-      ;;
-
-    -d|--docs)
-      opt_docs=true
       ;;
 
     -C|--print-config)
       opt_print_config=true
+      ;;
+
+    -u|--update)
+      opt_do_update=true
+      ;;
+
+    -d|--docs)
+      opt_docs=true
       ;;
 
     -h|--help)
@@ -85,6 +91,16 @@ done
 
 # run
 . ./lib/main.sh
+
+if [ $opt_do_update = true ]; then
+  if ! command_exists git; then
+    echo "Error: --update requires `git` to be in the PATH"
+    exit 1
+  fi
+  echo "Fetching latest version..."
+  git pull https://github.com/pstadler/metrics.sh.git master
+  exit $?
+fi
 
 if [ $opt_verbose = true ]; then
   verbose_on
