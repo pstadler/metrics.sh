@@ -22,7 +22,7 @@ $ ./metrics.sh --help
 
 ## Installation
 
-```bash
+```sh
 $ git clone git@github.com:pstadler/metrics.sh.git
 ```
 
@@ -57,22 +57,20 @@ Reporter        | Description
 
 A first step of configuration can be done by passing options to metrics.sh:
 
-```
-$ ./metrics.sh --help
-...
-$ ./metrics.sh -m cpu,memory -i 1
-# reports cpu and memory every second
+```sh
+$ ./metrics.sh --help              # print help
+$ ./metrics.sh -m cpu,memory -i 1  # report cpu and memory usage every second
 ```
 
 Some of the metrics and reporters are configurable. Documentation is available from within metrics.sh and can be printed with `--docs`:
 
-```
+```sh
 $ ./metrics.sh --docs | less
 ```
 
-For example, the `disk_usage` metric has a configuration variable `DISK_USAGE_MOUNTPOINT` which set to a default depending on the operating system metrics.sh is running on. Setting the variable before starting will overwrite it:
+As an example, the `disk_usage` metric has a configuration variable `DISK_USAGE_MOUNTPOINT` which is set to a default value depending on the operating system metrics.sh is running on. Setting the variable before starting will overwrite it:
 
-```
+```sh
 $ DISK_USAGE_MOUNTPOINT=/dev/vdb ./metrics.sh -m disk_usage
 # reports disk usage of /dev/vdb
 ```
@@ -81,7 +79,7 @@ $ DISK_USAGE_MOUNTPOINT=/dev/vdb ./metrics.sh -m disk_usage
 
 As maintaing all these options can become a cumbersome job, metrics.sh has support for configuration files.
 
-```
+```sh
 $ ./metrics.sh -C > metrics.ini  # write configuration to metrics.ini
 $ ./metrics.sh -c metrics.ini    # load configuration from metrics.ini
 ```
@@ -124,7 +122,7 @@ network_eth1.out: 0.03
 ...
 ```
 
-### Daemonize / init.d/ upstart
+### Daemonize / init.d / upstart
 
 TODO
 
