@@ -51,6 +51,7 @@ Reporter        | Description
 --------------- | -------------
 `stdout`        | Write to standard out (default)
 `file`          | Write to a file or named pipe
+`statsd`        | Send data to [Statsd](https://github.com/etsy/statsd)
 `influxdb`      | Send data to [InfluxDB](http://influxdb.com/)
 `keen_io`       | Send data to [Keen IO](https://keen.io)
 `stathat`       | Send data to [StatHat](https://www.stathat.com)
@@ -250,5 +251,4 @@ docs () {
 ## Roadmap
 
 - Test and improve init.d script and write docs for it
-- Implement StatsD reporter
 - Tests
