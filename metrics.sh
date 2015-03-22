@@ -105,7 +105,6 @@ fi
 if [ $opt_verbose = true ]; then
   verbose_on
   verbose "Started in verbose mode"
-  verbose "PID: $$"
   verbose "OS detected: $OS_TYPE"
 fi
 
@@ -161,5 +160,6 @@ main_init "$METRICS" "$REPORTER"
 verbose "Using metrics: $__METRICS"
 verbose "Using reporter: $__REPORTER"
 
+echo "metrics.sh started with PID: $$"
 verbose "Collecting metrics every $INTERVAL second(s)"
 main_collect
