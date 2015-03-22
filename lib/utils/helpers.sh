@@ -24,5 +24,5 @@ unique_id () {
 }
 
 print_prefixed () {
-  printf "$2" | sed -e "s/^/$1/g"
+  printf "$2\n" | sed -e "s/^/$1/g"
 }
