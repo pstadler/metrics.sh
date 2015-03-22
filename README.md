@@ -51,36 +51,36 @@ Reporter        | Description
 --------------- | -------------
 `stdout`        | Write to standard out (default)
 `file`          | Write to a file or named pipe
-`statsd`        | Send data to [Statsd](https://github.com/etsy/statsd)
+`statsd`        | Send data to [StatsD](https://github.com/etsy/statsd)
 `influxdb`      | Send data to [InfluxDB](http://influxdb.com/)
 `keen_io`       | Send data to [Keen IO](https://keen.io)
 `stathat`       | Send data to [StatHat](https://www.stathat.com)
 
 ## Configuration
 
-A first step of configuration can be done by passing options to metrics.sh:
+metrics.sh can be configured on the fly by passing along options when calling it:
 
 ```sh
 $ ./metrics.sh --help              # print help
 $ ./metrics.sh -m cpu,memory -i 1  # report cpu and memory usage every second
 ```
 
-Some of the metrics and reporters are configurable. Documentation is available from within metrics.sh and can be printed with `--docs`:
+Some of the metrics and reporters are configurable or require some variables to be defined in order to work. Documentation is available with the `--docs` option.
 
 ```sh
 $ ./metrics.sh --docs | less
 ```
 
-As an example, the `disk_usage` metric has a configuration variable `DISK_USAGE_MOUNTPOINT` which is set to a default value depending on the operating system metrics.sh is running on. Setting the variable before starting will overwrite it:
+As an example, the `disk_usage` metric has a configuration variable `DISK_USAGE_MOUNTPOINT` which is set to a default value depending on the operating system metrics.sh is running on. Setting the variable before starting will overwrite it.
 
 ```sh
 $ DISK_USAGE_MOUNTPOINT=/dev/vdb ./metrics.sh -m disk_usage
 # reports disk usage of /dev/vdb
 ```
 
-### Configuration file
+### Configuration files
 
-As maintaing all these options can become a cumbersome job, metrics.sh has support for configuration files.
+Maintaing all these options can become a cumbersome job, but metrics.sh provides functionality for creating and reading configuration files.
 
 ```sh
 $ ./metrics.sh -C > metrics.ini  # write configuration to metrics.ini
@@ -95,7 +95,7 @@ By default most lines in the configuration are commented out:
 ;NETWORK_IO_INTERFACE=eth0
 ```
 
-To enable a metric, simply remove the comments and modify values where needed:
+To enable a metric, simply remove comments and modify values where needed:
 
 ```ini
 [metric network_io]
@@ -115,7 +115,7 @@ NETWORK_IO_INTERFACE=eth0
 NETWORK_IO_INTERFACE=eth1
 ```
 
-`network_eth0` and `network_eth1` are aliases of the `network_io` metric with specific configurations. Data of both network interfaces will now be collected and reported independently:
+`network_eth0` and `network_eth1` are aliases of the `network_io` metric with specific configurations for each of them. Data of both network interfaces will now be collected and reported independently:
 
 ```
 network_eth0.in: 0.26
