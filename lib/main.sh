@@ -193,6 +193,8 @@ main_print_docs () {
   echo
   echo "# REPORTERS"
   for reporter in $__AVAILABLE_REPORTERS; do
+    load_reporter_with_prefix __r_${reporter}_ ./reporters/${reporter}.sh
+
     if ! is_function __r_${reporter}_docs; then
       continue
     fi
@@ -229,6 +231,8 @@ main_print_config () {
   done
 
   for reporter in $__AVAILABLE_REPORTERS; do
+    load_reporter_with_prefix __r_${reporter}_ ./reporters/${reporter}.sh
+
     if ! is_function __r_${reporter}_docs; then
       continue
     fi
