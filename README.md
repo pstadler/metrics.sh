@@ -53,6 +53,7 @@ Reporter        | Description
 `file`          | Write to a file or named pipe
 `statsd`        | Send data to [StatsD](https://github.com/etsy/statsd)
 `influxdb`      | Send data to [InfluxDB](http://influxdb.com/)
+`prometheus`    | Provide HTTP endpoint for [Prometheus](http://prometheus.io/)
 `keen_io`       | Send data to [Keen IO](https://keen.io)
 `stathat`       | Send data to [StatHat](https://www.stathat.com)
 

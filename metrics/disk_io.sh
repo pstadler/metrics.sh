@@ -11,7 +11,7 @@ defaults () {
 }
 
 start () {
-  readonly fifo=$TEMP_DIR/$(unique_id)
+  readonly fifo=$TEMP_DIR/$(unique_id)_disk_io
   mkfifo $fifo
 
   if is_osx; then

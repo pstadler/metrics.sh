@@ -8,6 +8,10 @@ iso_date () {
   date -u +"%Y-%m-%dT%H:%M:%SZ"
 }
 
+unix_timestamp () {
+  date "+%s"
+}
+
 in_array () {
   echo " $2 " | grep -q " $1 "
 }
