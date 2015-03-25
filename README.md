@@ -162,9 +162,9 @@ defaults () {
 # if needed. Returning 1 will disable this metric and report a warning.
 start () {
   if [ $DIR_SIZE_IN_MB = false ]; then
-    DU_ARGS="-s -m $DIR_SIZE_PATH"
-  else
     DU_ARGS="-s -k $DIR_SIZE_PATH"
+  else
+    DU_ARGS="-s -m $DIR_SIZE_PATH"
   fi
 }
 

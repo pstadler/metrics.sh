@@ -116,7 +116,7 @@ main_collect () {
       if is_function __m_${metric_alias}_start; then
         __m_${metric_alias}_start
         if [ $? -ne 0 ]; then
-          echo "Warning: metric '${metric_alias}' is disabled after failing to start"
+          echo "Warning: metric '${metric_alias}' is disabled after it failed to start"
           continue
         fi
       fi
