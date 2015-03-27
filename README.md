@@ -1,6 +1,6 @@
 # metrics.sh
 
-metrics.sh is a lightweight metrics collection and fowarding daemon implemented in portable POSIX compliant shell scripts. A transparent interface based on hooks enables writing custom collectors and reporters in an elegant way.
+metrics.sh is a lightweight metrics collection and forwarding daemon implemented in portable POSIX compliant shell scripts. A transparent interface based on hooks enables writing custom collectors and reporters in an elegant way.
 
 ## Usage
 
@@ -30,7 +30,7 @@ $ git clone git@github.com:pstadler/metrics.sh.git
 
 ### Requirements
 
-metrics.sh has been tested on Ubuntu 14.04 and Mac OS X but is supposed to run on most Unix-like operating systems. Some of the provided metrics require [procfs](http://en.wikipedia.org/wiki/Procfs) to be available when running on *nix. POSIX compliancy means that metrics.sh works with minimalistic command interpreters such as [dash](http://manpages.ubuntu.com/manpages/trusty/en/man1/dash.1.html). Built-in metrics do __not__ require root privileges.
+metrics.sh has been tested on Ubuntu 14.04 and Mac OS X but is supposed to run on most Unix-like operating systems. Some of the provided metrics require [procfs](http://en.wikipedia.org/wiki/Procfs) to be available when running on *nix. POSIX compliancy means that metrics.sh works with minimalistic command interpreters such as [dash](http://manpages.ubuntu.com/manpages/en/man1/dash.1.html). Built-in metrics do __not__ require root privileges.
 
 ## Metrics
 
