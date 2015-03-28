@@ -9,9 +9,10 @@
 # Description:       Controls the metrics daemon "metrics.sh"
 ### END INIT INFO
 
-SCRIPT=<SCRIPT>
-RUNAS=<USER>
-CONFIG_FILE=<CONFIG_FILE>
+SCRIPT_DIR=/opt/metrics.sh
+CONFIG_FILE=/etc/metrics.sh/metrics.ini
+RUNAS=root
+SCRIPT=$SCRIPT_DIR/metrics.sh
 ARGS="-c $CONFIG_FILE"
 NAME=metrics.sh
 
@@ -19,16 +20,19 @@ PIDFILE=/var/run/$NAME.pid
 LOGFILE=/var/log/$NAME.log
 
 # Exit if the package is not installed
-[ -x "$DAEMON" ] || exit 0
+[ -x "$SCRIPT" ] || exit 0
+
+cd $SCRIPT_DIR
 
 start() {
-  if [ -f $PIDFILE ] && kill -0 $(cat $PIDFILE); then
+  PID=$([ -f $PIDFILE ] && cat $PIDFILE)
+  if [ -n "$PID" ] && kill -0 $PID; then
     echo 'Service already running' >&2
     return 1
   fi
   echo 'Starting service...' >&2
-  local CMD="$SCRIPT &> \"$LOGFILE\" & echo \$!"
-  su -c "$CMD $ARGS" $RUNAS > "$PIDFILE"
+  local CMD="$SCRIPT $ARGS &> \"$LOGFILE\" & echo \$!"
+  su -c "$CMD" $RUNAS > "$PIDFILE"
   echo 'Service started' >&2
 }
 
@@ -43,29 +47,15 @@ stop() {
 }
 
 status() {
-  printf "%-50s" "Checking $NAME..."
   if [ -f $PIDFILE ]; then
     PID=$(cat $PIDFILE)
-    if [ -z "$(ps axf | grep ${PID} | grep -v grep)" ]; then
-      printf "%s\n" "The process appears to be dead but pidfile still exists"
+    if [ -z "$(ps axf | grep $PID | grep -v grep)" ]; then
+      echo "The process appears to be dead but pidfile still exists"
     else
-      echo "Running, the PID is $PID"
+      echo "Service is running"
     fi
   else
-    printf "%s\n" "Service not running"
-  fi
-}
-
-uninstall() {
-  echo -n 'Are you really sure you want to uninstall this service? That cannot be undone. [yes|No] '
-  local SURE
-  read SURE
-  if [ "$SURE" = "yes" ]; then
-    stop
-    rm -f "$PIDFILE"
-    echo "Notice: log file was not removed: '$LOGFILE'" >&2
-    update-rc.d -f <NAME> remove
-    rm -fv "$0"
+    echo "Service not running"
   fi
 }
 
@@ -79,13 +69,6 @@ case "$1" in
   status)
     status
     ;;
-  uninstall)
-    uninstall
-    ;;
-  restart)
-    stop
-    start
-    ;;
   *)
-    echo "Usage: $0 {start|stop|status|restart|uninstall}"
+    echo "Usage: $0 {start|stop|status}"
 esac

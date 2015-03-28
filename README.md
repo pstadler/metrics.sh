@@ -25,8 +25,12 @@ $ ./metrics.sh --help
 ## Installation
 
 ```sh
-$ git clone git@github.com:pstadler/metrics.sh.git
+$ git clone https://github.com/pstadler/metrics.sh.git
 ```
+
+## Running as a service on Linux
+
+[Docs](init.d/README.md)
 
 ### Requirements
 
@@ -248,8 +252,3 @@ docs () {
   echo "JSON_API_METHOD=$JSON_API_METHOD"
 }
 ```
-
-## Roadmap
-
-- Test and improve init.d script and write docs for it
-- Tests

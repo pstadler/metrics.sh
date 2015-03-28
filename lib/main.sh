@@ -69,7 +69,7 @@ main_collect () {
     trap "" 13
     trap - INT TERM EXIT
     echo Exit signal received, stopping...
-    kill -13 -$$
+    kill -13 0
   ' 13 INT TERM EXIT
 
   # init reporter
