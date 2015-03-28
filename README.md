@@ -28,9 +28,7 @@ $ ./metrics.sh --help
 $ git clone https://github.com/pstadler/metrics.sh.git
 ```
 
-## Running as a service on Linux
-
-[Docs](init.d/README.md)
+See this [guide](init.d/README.md) how to run metrics.sh as a service on Linux.
 
 ### Requirements
 
