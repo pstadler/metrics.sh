@@ -11,6 +11,11 @@ defaults () {
 }
 
 start () {
+  if ! command_exists iostat; then
+    echo "Warning: disk_io requires the command 'iostat' to be available"
+    return 1
+  fi
+
   readonly fifo=$TEMP_DIR/$(unique_id)_disk_io
   mkfifo $fifo
 

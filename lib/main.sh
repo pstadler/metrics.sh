@@ -178,7 +178,8 @@ main_terminate () {
   if [ -d $TEMP_DIR ]; then
     rmdir $TEMP_DIR
   fi
-  verbose "done"
+
+  echo "done"
 }
 
 main_print_docs () {
