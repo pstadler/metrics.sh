@@ -1,4 +1,4 @@
-# metrics.sh
+![metrics.sh](https://raw.githubusercontent.com/pstadler/metrics.sh/assets/logo.png)
 
 metrics.sh is a lightweight metrics collection and forwarding daemon implemented in portable POSIX compliant shell scripts. A transparent interface based on hooks enables writing custom collectors and reporters in an elegant way.
 
