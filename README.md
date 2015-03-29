@@ -2,6 +2,16 @@
 
 metrics.sh is a lightweight metrics collection and forwarding daemon implemented in portable POSIX compliant shell scripts. A transparent interface based on hooks enables writing custom collectors and reporters in an elegant way.
 
+**Project philosophy**
+
+  - Flat learning curve
+  - Easily extensible
+  - Low impact on system resources
+  - No compilation, custom interpreters and runtimes required
+  - Freedom to choose any service for storage, charting and alerting
+  - Open source, no proprietary parts
+  - Community-driven development, growing number of included metrics over time
+
 ## Usage
 
 ```
