@@ -15,7 +15,7 @@ esac)
 
 is_solaris () { [ $OS_TYPE = 'solaris' ]; }
 is_osx ()     { [ $OS_TYPE = 'osx' ]; }
-is_linux ()   { [ $OS_TYPE = 'solaris' ]; }
+is_linux ()   { [ $OS_TYPE = 'linux' ]; }
 is_bsd ()     { [ $OS_TYPE = 'bsd']; }
 is_unknown () { [ $OS_TYPE = 'unknown' ]; }
 
