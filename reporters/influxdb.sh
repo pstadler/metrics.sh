@@ -13,10 +13,7 @@ start () {
   fi
 
   if [ "$INFLUXDB_SEND_HOSTNAME" = true ]; then
-    __influxdb_columns="[\"value\",\"host\"]"
-    __influxdb_hostname=$(hostname)
-  else
-    __influxdb_columns="[\"value\"]"
+    __influxdb_hostname="host=$(hostname)"
   fi
 }
 
@@ -24,13 +21,8 @@ report () {
   local metric=$1
   local value=$2
   local points
-  if [ "$INFLUXDB_SEND_HOSTNAME" = true ]; then
-    points="[$value,\"$__influxdb_hostname\"]"
-  else
-    points="[$value]"
-  fi
-  local data="[{\"name\":\"$metric\",\"columns\":$__influxdb_columns,\"points\":[$points]}]"
-  curl -s -X POST $INFLUXDB_API_ENDPOINT -d $data
+  local data="$metric,$__influxdb_hostname value=$value"
+  curl  -s -X POST $INFLUXDB_API_ENDPOINT --data-binary "$data"
 }
 
 docs () {
