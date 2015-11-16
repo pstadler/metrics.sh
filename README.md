@@ -63,6 +63,7 @@ Reporter        | Description
 --------------- | -------------
 `stdout`        | Write to standard out (default)
 `file`          | Write to a file or named pipe
+`udp`           | Send data to any service via UDP
 `statsd`        | Send data to [StatsD](https://github.com/etsy/statsd)
 `influxdb`      | Send data to [InfluxDB](http://influxdb.com/)
 `prometheus`    | Provide HTTP endpoint for [Prometheus](http://prometheus.io/)
