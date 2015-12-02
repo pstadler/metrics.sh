@@ -93,7 +93,7 @@ done
 . ./lib/main.sh
 
 if [ $opt_do_update = true ]; then
-  if ! command_exists foo; then
+  if ! command_exists git; then
     echo "Error: --update requires 'git' to be in the PATH"
     exit 1
   fi
