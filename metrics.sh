@@ -125,7 +125,7 @@ fi
 if [ -n "$opt_config_file" ]; then
   verbose "Loading configuration file: $opt_config_file"
 
-  parse_config $opt_config_file
+  parse_config "$opt_config_file"
   if [ $? -ne 0 ]; then
     exit 1
   fi
