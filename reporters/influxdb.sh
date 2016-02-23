@@ -20,7 +20,6 @@ start () {
 report () {
   local metric=$1
   local value=$2
-  local points
   local data="$metric,$__influxdb_hostname value=$value"
   curl  -s -X POST $INFLUXDB_API_ENDPOINT --data-binary "$data"
 }
