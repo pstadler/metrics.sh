@@ -16,7 +16,7 @@ metrics.sh is a lightweight metrics collection and forwarding daemon implemented
 
 ```
 $ ./metrics.sh --help
-  
+
   Usage: ./metrics.sh [-d] [-h] [-v] [-c] [-m] [-r] [-i] [-C] [-u]
 
   Options:
@@ -59,16 +59,17 @@ Metric          | Description
 
 ## Reporters
 
-Reporter        | Description
---------------- | -------------
-`stdout`        | Write to standard out (default)
-`file`          | Write to a file or named pipe
-`udp`           | Send data to any service via UDP
-`statsd`        | Send data to [StatsD](https://github.com/etsy/statsd)
-`influxdb`      | Send data to [InfluxDB](http://influxdb.com/)
-`prometheus`    | Provide HTTP endpoint for [Prometheus](http://prometheus.io/)
-`keen_io`       | Send data to [Keen IO](https://keen.io)
-`stathat`       | Send data to [StatHat](https://www.stathat.com)
+Reporter         | Description
+---------------- | -------------
+`stdout`         | Write to standard out (default)
+`file`           | Write to a file or named pipe
+`udp`            | Send data to any service via UDP
+`statsd`         | Send data to [StatsD](https://github.com/etsy/statsd)
+`influxdb`       | Send data to [InfluxDB](http://influxdb.com/)
+`prometheus`     | Provide HTTP endpoint for [Prometheus](http://prometheus.io/)
+`keen_io`        | Send data to [Keen IO](https://keen.io)
+`stathat`        | Send data to [StatHat](https://www.stathat.com)
+`logentries_com` | Send data to [Logentries](https://logentries.com/)
 
 ## Configuration
 
@@ -189,7 +190,7 @@ collect () {
   report $(du $DU_ARGS | awk '{ print $1 }')
   # If report is called with two arguments, the first one will be appended
   # to the metric name, for example `report "foo" $val` would be reported as
-  # "dir_size.foo: $val". This is helpful when a metric is collecting multiple 
+  # "dir_size.foo: $val". This is helpful when a metric is collecting multiple
   # values like `network_io`, which reports "network_io.in" / "network_io.out".
 }
 
@@ -240,7 +241,7 @@ start () {
 
 # Report metric. This function is called whenever there's a new value
 # to report. It's important to know that metrics don't call this function
-# directly, as there's some more work to be done before. You can safely assume 
+# directly, as there's some more work to be done before. You can safely assume
 # that arguments passed to this function are sanitized and valid.
 report () {
   local metric=$1 # the name of the metric, e.g. "cpu", "cpu_alias", "cpu.foo"
