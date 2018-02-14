@@ -41,7 +41,7 @@ prometheus_httpd () {
   echo "Serving prometheus HTTP endpoint at http://localhost:$PROMETHEUS_PORT/metrics"
   while true; do
     local REQUEST RESPONSE
-    cat $prometheus_httpd_fifo | nc -l $PROMETHEUS_PORT | while read line; do
+    cat $prometheus_httpd_fifo | nc -N -l $PROMETHEUS_PORT | while read line; do
       line=$(echo "$line" | tr -d '[\r\n]')
       # extract the request
       if echo "$line" | grep -qE '^GET /'; then
