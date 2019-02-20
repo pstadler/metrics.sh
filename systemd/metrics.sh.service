@@ -1,0 +1,8 @@
+[Unit]
+Description=Server metrics collector
+
+[Service]
+ExecStart=/opt/metrics.sh/metrics.sh -c /etc/metrics.sh/metrics.ini
+
+[Install]
+WantedBy=multi-user.target
