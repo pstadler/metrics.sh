@@ -9,7 +9,6 @@ $ git clone https://github.com/pstadler/metrics.sh.git
 $ cd metrics.sh
 # Install the service
 $ cp -p $PWD/systemd/metrics.sh.service /etc/systemd/system/metrics.sh.service
-$ chmod 664 /etc/systemd/system/metrics.sh.service
 # Create a config file
 $ mkdir /etc/metrics.sh && chmod 600 /etc/metrics.sh
 $ ./metrics.sh -C > /etc/metrics.sh/metrics.ini
