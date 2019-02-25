@@ -5,6 +5,7 @@ After=network.target
 
 [Service]
 ExecStart=/opt/metrics.sh/metrics.sh -c /etc/metrics.sh/metrics.ini
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
