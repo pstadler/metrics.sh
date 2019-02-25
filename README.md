@@ -39,6 +39,7 @@ $ git clone https://github.com/pstadler/metrics.sh.git
 ```
 
 See this [guide](init.d/README.md) how to run metrics.sh as a service on Linux.
+Or [here](systemd/README.md) for instructions to set metrics.sh up for systemd.
 
 ### Requirements
 
