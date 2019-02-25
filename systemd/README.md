@@ -23,9 +23,9 @@ $ systemctl daemon-reload
 $ systemctl start metrics.sh.service
 
 # If run with the default configuration where reporter is 'stdout', metrics
-# will be written to /var/log/metrics.sh.log. Be aware that this file will
-# grow fast.
-$ tail -f /var/log/metrics.sh.log
+# will be written to the journal. See the log using `journalctl -u metrics.sh`
+# or follow it with:
+$ journalctl -f -u metrics.sh
 
 # Stop service
 $ systemctl stop metrics.sh.service
