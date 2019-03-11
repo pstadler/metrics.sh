@@ -2,7 +2,7 @@
 
 get_available_reporters () {
   local result
-  for file in `ls ${DIR}/reporters/*.sh $CUSTOM_REPORTERS_PATH/*.sh 2> /dev/null`; do
+  for file in `ls ${PWD}/reporters/*.sh $CUSTOM_REPORTERS_PATH/*.sh 2> /dev/null`; do
     local filename=$(basename $file)
     local reporter=${filename%.*}
     result=$(echo "$result $reporter")
@@ -12,7 +12,7 @@ get_available_reporters () {
 
 get_available_metrics () {
   local result
-  for file in `ls ${DIR}/metrics/*.sh $CUSTOM_METRICS_PATH/*.sh 2> /dev/null`; do
+  for file in `ls ${PWD}/metrics/*.sh $CUSTOM_METRICS_PATH/*.sh 2> /dev/null`; do
     local filename=$(basename $file)
     local metric=${filename%.*}
     # register metric
@@ -26,7 +26,7 @@ load_reporter_with_prefix () {
   local name=$2
 
   local file
-  for dir in $CUSTOM_REPORTERS_PATH ${DIR}/reporters; do
+  for dir in $CUSTOM_REPORTERS_PATH ${PWD}/reporters; do
     if [ -f $dir/$name.sh ]; then
       file=$dir/$name.sh
       break
@@ -53,7 +53,7 @@ load_metric_with_prefix () {
   local name=$2
 
   local file
-  for dir in $CUSTOM_METRICS_PATH ${DIR}/metrics; do
+  for dir in $CUSTOM_METRICS_PATH ${PWD}/metrics; do
     if [ -f $dir/$name.sh ]; then
       file=$dir/$name.sh
       break
