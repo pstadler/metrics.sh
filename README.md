@@ -39,6 +39,7 @@ $ git clone https://github.com/pstadler/metrics.sh.git
 ```
 
 See this [guide](init.d/README.md) how to run metrics.sh as a service on Linux.
+Or [here](systemd/README.md) for instructions to set metrics.sh up for systemd.
 
 ### Requirements
 
@@ -95,7 +96,7 @@ $ DISK_USAGE_MOUNTPOINT=/dev/vdb ./metrics.sh -m disk_usage
 
 ### Configuration files
 
-Maintaing all these options can become a cumbersome job, but metrics.sh provides functionality for creating and reading configuration files.
+Maintaining all these options can become a cumbersome job, but metrics.sh provides functionality for creating and reading configuration files.
 
 ```sh
 $ ./metrics.sh -C > metrics.ini  # write configuration to metrics.ini
@@ -152,7 +153,7 @@ defaults () {}  # setting default variables
 start () {}     # called at the beginning
 collect () {}   # collect the actual metric
 stop () {}      # called before exiting
-docs () {}      # used for priting docs and creating output for configuration
+docs () {}      # used for printing docs and creating output for configuration
 ```
 
 Metrics run within an isolated scope. It's generally safe to create variables and helper functions within metrics.
@@ -215,7 +216,7 @@ defaults () {}  # setting default variables
 start () {}     # called at the beginning
 report () {}    # report the actual metric
 stop () {}      # called before exiting
-docs () {}      # used for priting docs and creating output for configuration
+docs () {}      # used for printing docs and creating output for configuration
 ```
 
 Below is an example script for sending metrics as JSON data to an API endpoint. Assuming this script is located at `./reporters/custom/json_api.sh`, it can be invoked by calling `./metrics.sh -r json_api`.
@@ -231,7 +232,7 @@ defaults () {
 }
 
 # Prepare the reporter. Create helper functions to be used during collection
-# if needed. Returning 1 will result in an error and exection will be stopped.
+# if needed. Returning 1 will result in an error and execution will be stopped.
 start () {
   if [ -z $JSON_API_ENDPOINT ]; then
     echo "Error: json_api requires \$JSON_API_ENDPOINT to be specified"

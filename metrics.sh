@@ -4,6 +4,7 @@
 LC_ALL=en_US.UTF-8
 LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
+DIR=$(dirname "$0")
 
 usage () {
   echo "  Usage: $0 [-d] [-h] [-v] [-c] [-m] [-r] [-i] [-C] [-u]"
@@ -90,7 +91,7 @@ while [ $# -gt 0 ]; do
 done
 
 # run
-. ./lib/main.sh
+. ${DIR}/lib/main.sh
 
 if [ $opt_do_update = true ]; then
   if ! command_exists git; then

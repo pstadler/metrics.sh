@@ -1,0 +1,11 @@
+[Unit]
+Description=Controls the metrics daemon "metrics.sh"
+Documentation=https://github.com/pstadler/metrics.sh
+After=network.target
+
+[Service]
+ExecStart=/opt/metrics.sh/metrics.sh -c /etc/metrics.sh/metrics.ini
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
