@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # load utils
-for util in ${PWD}/lib/utils/*.sh; do
+for util in ${DIR}/lib/utils/*.sh; do
   . $util
 done
 
@@ -16,10 +16,10 @@ main_defaults () {
     DEFAULT_REPORTER=stdout
   fi
   if [ -z $CUSTOM_REPORTERS_PATH ]; then
-    CUSTOM_REPORTERS_PATH=${PWD}/reporters/custom
+    CUSTOM_REPORTERS_PATH=${DIR}/reporters/custom
   fi
   if [ -z $CUSTOM_METRICS_PATH ]; then
-    CUSTOM_METRICS_PATH=${PWD}/metrics/custom
+    CUSTOM_METRICS_PATH=${DIR}/metrics/custom
   fi
 }
 
